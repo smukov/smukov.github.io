@@ -11,7 +11,7 @@ $tagColour: lightblue;
 
 @mixin selected-button()
 {
-    background-color: crimson;
+    background-color: #009DDC; /*crimson;*/
     color: white;
 }
 
@@ -37,7 +37,7 @@ $tagColour: lightblue;
 
         p.selected.tag::after
         {
-            border-left-color: crimson;
+            border-left-color: #009DDC; /*crimson;*/
         }
     }
 

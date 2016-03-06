@@ -48,12 +48,12 @@
 }
 
 .tag-with-hover:hover {
-  background-color: crimson;
+  background-color: #009DDC; /*crimson;*/
   color: white;
   cursor: pointer;
 }
 
 .tag-with-hover:hover::after {
-   border-left-color: crimson;
+   border-left-color: #009DDC; /*crimson;*/
    cursor: pointer;
 }
