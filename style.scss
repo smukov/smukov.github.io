@@ -32,12 +32,15 @@ body {
   width: 100%;
 }
 
+h1.site-name {
+    line-height: 1.7 !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: $helveticaNeue;
   color: $sfBlue;//$darkerGray;
   font-weight: bold;
-
-  line-height: 1.7;
+  line-height: 1.1;
   margin: 1em 0 15px;
   padding: 0;
 

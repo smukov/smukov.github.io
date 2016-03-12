@@ -5,7 +5,7 @@ published: true
 tags: "workflow"
 ---
 
-If you ever wanted to create a Time-Dependent workflow rule that will be triggered every time a record is edited,
+If you ever wanted to create a Time-Dependent workflow rule that will be triggered _every_ time a record is edited,
 your first instinct was probably to create a rule that is evaluated when a record is `created, and every time it's edited`.
 However, as the image below shows, `you cannot add time-dependent workflow actions with this option`.
 
@@ -32,4 +32,4 @@ Finally, specify a `Time-Dependent Workflow Action` that is triggered 7 days aft
 
 Now you have a `Time-Dependent Workflow` that will create a `Time-Dependent Action` every time you create or edit an Opportunity record.
 
-That's it for my first blog post. If you have any suggestions or questions feel free to comment below.
+That's it for my first ever blog post. If you have any suggestions or questions feel free to comment below.
