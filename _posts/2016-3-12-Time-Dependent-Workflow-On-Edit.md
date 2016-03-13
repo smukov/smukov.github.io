@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Run Time-Dependent Workflow on every record edit"
-published: false
+published: true
 tags: "workflow"
 ---
 
