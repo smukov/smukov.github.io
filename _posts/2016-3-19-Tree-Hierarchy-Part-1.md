@@ -46,4 +46,4 @@ In the image above you can see what will be the final end product of this post s
 
 ### Conclusion
 
-This was just a quick overivew of the whole setup that I'll cover in great details over the coming weeks. Stay tuned for more.
+This was just a quick overview of the whole setup that I'll cover in great details over the coming weeks. Stay tuned for more.
