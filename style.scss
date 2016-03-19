@@ -82,6 +82,10 @@ a {
   }
 }
 
+li {
+    margin-top: 10px;
+}
+
 ul, ol {
   margin: 15px 0;
   padding-left: 30px;
@@ -262,7 +266,7 @@ nav {
     border-left: 2px solid $gray;
     padding: 0.1em 1em;
     color: $gray;
-    font-size: 22px;
+    font-size: 18px;
     font-style: italic;
   }
 
