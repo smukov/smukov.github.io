@@ -225,7 +225,7 @@ Below you can see some of the ways you could use this `ArrayFilter` class to fil
 Example #1:
 {% highlight java %}
 //filter by String
-List<sObject> filteredArray = ArrayFilter.filter(someArrayToFilter, new ArrayFilter.Filter[]{new ArrayFilter.Filter('Name', '=', 'Router Firewall Rental')});
+List<sObject> filteredArray = ArrayFilter.filter(someArrayToFilter, new ArrayFilter.Filter[]{new ArrayFilter.Filter('Name', '=', 'John Doe')});
 {% endhighlight %}
 
 Example #2:
