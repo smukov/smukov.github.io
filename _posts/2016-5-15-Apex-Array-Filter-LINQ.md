@@ -5,7 +5,7 @@ published: true
 tags: "apex"
 ---
 
-Recently I needed a way to quickly filter out an array of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there's something similar in Apex as well. However, in Apex, there is no easy way to filter through an array without using the `for` loop.
+Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there's something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the `for` loop.
 
 I'm usually trying to limit the number of DML statements in Apex, so I'd often query more records at once (if I know I'm not going to reach 50.000 records limit) and then filter through it via `for` loop in case I need to get multiple sets of records from that query. Because of this need, I decided to create a helper class that will help me achieve this without writing the `for` loop every time I need to filter something. I'm sharing the class with you below, and you can share your thoughts with me in the comments.
 
@@ -220,7 +220,7 @@ public class ArrayFilter {
 
 ## Sample usage
 
-Below you can see some of the ways you could use this `ArrayFilter` class.
+Below you can see some of the ways you could use this `ArrayFilter` class to filter a list of objects.
 
 Example #1:
 {% highlight java %}
