@@ -8,7 +8,7 @@ tags: "apex visualforce"
 Below you can see a simple code that can be used to return a value from an Apex controller to Visualforce page when calling a controller button from an `apex:commandButton`. This approach doesn't require you to use `@RemoteAction` (i.e. static methods), so you doesn't lose the stateful nature of your page.
 
 Visualforce Page:
-{% highlight html}
+{% highlight html %}
 <apex:page controller="ReturnController">
 
     <apex:form >
@@ -24,10 +24,10 @@ Visualforce Page:
     </script>
 
 </apex:page>
-{% endhighlight }
+{% endhighlight %}
 
 Controller:
-{% highlight java}
+{% highlight java %}
 public class ReturnController {
 
     public Integer ValueReturned {get; set;}
@@ -41,4 +41,4 @@ public class ReturnController {
     }
 
 }
-{% endhighlight }
+{% endhighlight %}
