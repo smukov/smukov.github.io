@@ -5,7 +5,7 @@ published: true
 tags: "apex visualforce"
 ---
 
-Below you can see a simple code that can be used to return a value from an Apex controller to Visualforce page when calling a controller button from an `apex:commandButton`. This approach doesn't require you to use `@RemoteAction` (i.e. static methods), so you doesn't lose the stateful nature of your page.
+Below you can see a simple code that can be used to return a value from an Apex controller to a Visualforce page when calling a controller button from an `apex:commandButton`. This approach doesn't require you to use `@RemoteAction` (i.e. static methods), so you doesn't lose the stateful nature of your page.
 
 Visualforce Page:
 {% highlight html %}
