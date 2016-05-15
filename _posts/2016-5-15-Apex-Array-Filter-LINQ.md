@@ -218,6 +218,8 @@ public class ArrayFilter {
 }
 {% endhighlight %}
 
+## Sample usage
+
 Below you can see some of the ways you could use this `ArrayFilter` class.
 
 Example #1:
