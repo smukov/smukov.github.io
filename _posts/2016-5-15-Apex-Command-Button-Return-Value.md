@@ -44,3 +44,9 @@ public class ReturnController {
 {% endhighlight %}
 
 That's it. Try it, it works. Let me know in the comments if there are any drawbacks to this approach. I'm always open to constructive critique.
+
+P.S. The same would work for `apex:actionFunction` that you can call from JavaScript, see below:
+
+{% highlight html%}
+<apex:actionFunction action="{!callMe}" name="actionFuncName" oncomplete="processReturnedValue({!valueReturned}); "/>
+{% endhighlight %}
