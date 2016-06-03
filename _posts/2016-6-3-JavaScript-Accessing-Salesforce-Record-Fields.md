@@ -57,4 +57,4 @@ console.log(getRecordField(test, 'another_property.nested_array.1.x'));
 
 {% endhighlight %}
 
-I've found this method to be incredibly useful when I have to work with hierarchy of objects returned from Salesforce. I hope that you'll find this useful as well.
+I've found this method to be incredibly useful when I have to work with hierarchy of objects returned from Salesforce (e.g. - `record.Order_Line__r.Primary_Site__r.Street_Addess__c`). I hope that you'll find this useful as well.
