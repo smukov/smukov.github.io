@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Accessing Salesforce Record Fields with JavaScript"
+title: "Sorting Salesforce Records with JavaScript"
 published: true
 tags: "javascript visualforce utility"
 ---
