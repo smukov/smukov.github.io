@@ -182,6 +182,7 @@ PersistHierarchy.persistAll('SOME_ID', objA);
 Since the `ObjectA` is the root of our hierarchy, it can potentially have a parent that is some existing record within the Salesforce, in which case `SOME_ID` should be replaced with that record's ID. Otherwise, we can simply pass `null` instead, and handle it properly in `preparePersistSelf` method in `ObjectA` class.
 
 Method explanations:
+
 * `preparePersistSelf` - takes in the `parentId`, which it uses to assign a parent to the current record, thus creating the hierarchy, or Parent-Child connection.
 * `getChildrenToPersist` - prepares all the children for persisting by calling the `preparePersistSelf` on each of them, and passing the `parentId`
 * `getDbObject` - returns the `sObject` represented by this wrapper classes
