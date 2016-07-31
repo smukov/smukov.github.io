@@ -15,33 +15,33 @@ Let's see how to implement and use the `PersistHierarchy` class.
 
 {% highlight java tabsize=2 %}
 public class PersistHierarchy {
-	public static void persistAll(IPersistable parent, Id parentId) {
-		parent.preparePersistSelf(parentId);
-		insert parent.getDbObject();
-		persistChildren(parent.getChildrenToPersist());
-	}
+ public static void persistAll(IPersistable parent, Id parentId) {
+  parent.preparePersistSelf(parentId);
+  insert parent.getDbObject();
+  persistChildren(parent.getChildrenToPersist());
+ }
 
-	private static void persistChildren(List<IPersistable> children){
-		//first, persist all children so their IDs get populated
-		List<sObject> objectsToPersist = new List<sObject>();
-		for(IPersistable child : children){
-			sObject dbObject = child.getDbObject();
-			if(dbObject != null){
-				objectsToPersist.add(child.getDbObject());
-			}
-		}
-		insert objectsToPersist;
+ private static void persistChildren(List < IPersistable > children) {
+  //first, persist all children so their IDs get populated
+  List < sObject > objectsToPersist = new List < sObject > ();
+  for (IPersistable child: children) {
+   sObject dbObject = child.getDbObject();
+   if (dbObject != null) {
+    objectsToPersist.add(child.getDbObject());
+   }
+  }
+  insert objectsToPersist;
 
-		//now that childrens have their IDs, start preparing the grandchildrens
-		List<IPersistable> grandChildren = new List<IPersistable>();
-		for(IPersistable child : children){
-			grandChildren.addAll(child.getChildrenToPersist());
-		}
+  //now that childrens have their IDs, start preparing the grandchildrens
+  List < IPersistable > grandChildren = new List < IPersistable > ();
+  for (IPersistable child: children) {
+   grandChildren.addAll(child.getChildrenToPersist());
+  }
 
-		if(grandChildren.size() != 0){
-			persistChildren(grandChildren);
-		}
-	}
+  if (grandChildren.size() != 0) {
+   persistChildren(grandChildren);
+  }
+ }
 }
 {% endhighlight %}
 
@@ -51,9 +51,9 @@ As you saw above, `PersistHierarchy` is accepting objects that are implementing 
 
 {% highlight java tabsize=2 %}
 public interface IPersistable {
-	void preparePersistSelf(Id parentId);
-	sObject getDbObject();
-	List<IPersistable> getChildrenToPersist();
+ void preparePersistSelf(Id parentId);
+ sObject getDbObject();
+ List<IPersistable> getChildrenToPersist();
 }
 {% endhighlight %}
 
@@ -63,111 +63,111 @@ Let's see an example of a few classes that are implementing this interface, and 
 
 {% highlight java tabsize=2 %}
 public class ObjectA implements IPersistable {
-   //define some object properties here
-   public String prop1 = '';
+ //define some object properties here
+ public String prop1 = '';
 
-   //Childrens
-   List<ObjectB> someChildren;
-   ObjectC anotherChild;
+ //Childrens
+ List < ObjectB > someChildren;
+ ObjectC anotherChild;
 
-   //The Custom Salesforce Object for this wrapper
-   DB_Obj_A dbObject;
+ //The Custom Salesforce Object for this wrapper
+ DB_Obj_A dbObject;
 
-   public void preparePersistSelf(Id parentId){
-       this.dbObject = new DB_Obj_A();
-       //this object is a root of our hierarchy, if it doesn't attaches to any
-       //existing record in the system, it can ignore the 'parentId' that is passed
-       //in this method
-       this.dbObject.Parent_Id__c = parentId;
+ public void preparePersistSelf(Id parentId) {
+  this.dbObject = new DB_Obj_A();
+  //this object is a root of our hierarchy, if it doesn't attaches to any
+  //existing record in the system, it can ignore the 'parentId' that is passed
+  //in this method
+  this.dbObject.Parent_Id__c = parentId;
 
-       //set some object properties here
-       this.dbObject.Prop_1__c = this.prop1;
-   }
+  //set some object properties here
+  this.dbObject.Prop_1__c = this.prop1;
+ }
 
-   public List<IPersistable> getChildrenToPersist(){
-       List<IPersistable> children = new List<IPersistable>();
+ public List < IPersistable > getChildrenToPersist() {
+  List < IPersistable > children = new List < IPersistable > ();
 
-       for(ObjectB o : someChildren){
-           o.preparePersistSelf(this.dbObject.Id);
-           children.add(o);
-       }
+  for (ObjectB o: someChildren) {
+   o.preparePersistSelf(this.dbObject.Id);
+   children.add(o);
+  }
 
-       if(this.anotherChild != null) {
-				  this.anotherChild.preparePersistSelf(this.dbObject.Id);
-				  children.add(this.anotherChild);
-			 }
+  if (this.anotherChild != null) {
+   this.anotherChild.preparePersistSelf(this.dbObject.Id);
+   children.add(this.anotherChild);
+  }
 
-       return children;
-    }
+  return children;
+ }
 
-    public sObject getDbObject(){
-       return this.dbObject;
-    }
+ public sObject getDbObject() {
+  return this.dbObject;
+ }
 }
 {% endhighlight %}
 
 {% highlight java tabsize=2 %}
 public class ObjectB implements IPersistable {
-   //define some object properties here
-   public String propX = '';
+ //define some object properties here
+ public String propX = '';
 
-   //Childrens
-   List<ObjectC> someChildren;
+ //Childrens
+ List < ObjectC > someChildren;
 
-   //The Custom Salesforce Object for this wrapper
-   DB_Obj_B dbObject;
+ //The Custom Salesforce Object for this wrapper
+ DB_Obj_B dbObject;
 
-   public void preparePersistSelf(Id parentId){
-       this.dbObject = new DB_Obj_B();
-       this.dbObject.Parent_Id__c = parentId;
+ public void preparePersistSelf(Id parentId) {
+  this.dbObject = new DB_Obj_B();
+  this.dbObject.Parent_Id__c = parentId;
 
-       //set some object properties here
-       this.dbObject.Prop_X__c = this.propX;
-   }
+  //set some object properties here
+  this.dbObject.Prop_X__c = this.propX;
+ }
 
-   public List<IPersistable> getChildrenToPersist(){
-       List<IPersistable> children = new List<IPersistable>();
+ public List < IPersistable > getChildrenToPersist() {
+  List < IPersistable > children = new List < IPersistable > ();
 
-       for(ObjectC o : someChildren){
-           o.preparePersistSelf(this.dbObject.Id);
-           children.add(o);
-       }
+  for (ObjectC o: someChildren) {
+   o.preparePersistSelf(this.dbObject.Id);
+   children.add(o);
+  }
 
-       return children;
-    }
+  return children;
+ }
 
-     public sObject getDbObject(){
-         return this.dbObject;
-     }
+ public sObject getDbObject() {
+  return this.dbObject;
+ }
 }
 {% endhighlight %}
 
 {% highlight java tabsize=2 %}
 public class ObjectC implements IPersistable {
-   //define some object properties here
-   String propN = '';
+ //define some object properties here
+ String propN = '';
 
-   //The Custom Salesforce Object for this wrapper
-   DB_Obj_C dbObject;
+ //The Custom Salesforce Object for this wrapper
+ DB_Obj_C dbObject;
 
-   public void preparePersistSelf(Id parentId){
-       this.dbObject = new DB_Obj_C();
-       this.dbObject.Parent_Id__c = parentId;
+ public void preparePersistSelf(Id parentId) {
+  this.dbObject = new DB_Obj_C();
+  this.dbObject.Parent_Id__c = parentId;
 
-       //set some object properties here
-       this.dbObject.Prop_N__c = this.propN;
-   }
+  //set some object properties here
+  this.dbObject.Prop_N__c = this.propN;
+ }
 
-   public List<IPersistable> getChildrenToPersist(){
-       //NOTE: this is a last node in a hierarchy, it doesn't have any children
-       //so it should return an empty list of children
-       List<IPersistable> children = new List<IPersistable>();
-       return children;
-    }
+ public List < IPersistable > getChildrenToPersist() {
+  //NOTE: this is a last node in a hierarchy, it doesn't have any children
+  //so it should return an empty list of children
+  List < IPersistable > children = new List < IPersistable > ();
+  return children;
+ }
 
-    public sObject getDbObject(){
-      return this.dbObject;
-    }
+ public sObject getDbObject() {
+  return this.dbObject;
+ }
 }
 {% endhighlight %}
 
