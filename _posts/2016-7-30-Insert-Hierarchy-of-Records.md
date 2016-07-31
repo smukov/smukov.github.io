@@ -5,16 +5,16 @@ published: true
 tags: "apex"
 ---
 
-I was working on a feature where I needed to connect my company's Salesforce org with two other partners using the SOAP API (I actually had to build a WSDL to APEX tool from scratch in order to parse the partners' WSDL files, but that's a different story). When I sent request to partners' services, I would receive back an XML which I would parse into a hierarchy of my wrapper classes, and then I needed to persist all of those objects into our database.
+I was working on a feature where I needed to connect my company's Salesforce org with two other partners using the SOAP API. When I sent request to partners' services, I would receive back an XML which I would parse into a hierarchy of my wrapper classes, and then I needed to persist all of those objects into our database.
 
-I was reading somewhere how to persist Parent-Child records at once, when the parents' IDs are not available, and one of the solutions was by using the External Id field. I didn't felt like going this way, so I created a new class called `PersistHierarchy`. Basically, what this class will do is if you have a hierarchy that is N levels deep, it will insert this hierarchy with N insert statements, by grouping nodes (records) at each hierarchy level and inserting them together. Since you can perform 150 DML statements during one transaction, that means that you can insert a hierarchy that is 150 levels deep using one call.
+I was reading somewhere how to persist Parent-Child records at once when the parents' IDs are not available, and one of the solutions was by using the External Id field. I didn't felt like going this way, so I created a new class called `PersistHierarchy`. Basically, what this class will do is if you have a hierarchy that is N levels deep, it will insert this hierarchy with N insert statements by grouping nodes (records) at each hierarchy level and inserting them together. Since you can perform 150 DML statements during one transaction, that means that you can insert a hierarchy that is 150 levels deep using one call.
 
 Let's see how to implement and use the `PersistHierarchy` class.
 
 ## PersistHierarchy implementation
 
 {% highlight java %}
-public with sharing class PersistHierarchy {
+public class PersistHierarchy {
 	public static void persistAll(IPersistable parent, Id parentId) {
 		parent.preparePersistSelf(parentId);
 		insert parent.getDbObject();
@@ -32,7 +32,7 @@ public with sharing class PersistHierarchy {
 		}
 		insert objectsToPersist;
 
-    //now that childrens have their IDs, start preparing the grandchildrens
+		//now that childrens have their IDs, start preparing the grandchildrens
 		List<IPersistable> grandChildren = new List<IPersistable>();
 		for(IPersistable child : children){
 			grandChildren.addAll(child.getChildrenToPersist());
@@ -62,7 +62,7 @@ Let's see an example of a few classes that are implementing this interface, and 
 ## Sample Implementation
 
 {% highlight java %}
-class ObjectA implements IPersistable {
+public class ObjectA implements IPersistable {
    //define some object properties here
    public String prop1 = '';
 
@@ -93,21 +93,21 @@ class ObjectA implements IPersistable {
        }
 
        if(this.anotherChild != null) {
-				   this.anotherChild.preparePersistSelf(this.dbObject.Id);
-				   children.add(this.anotherChild);
+				  this.anotherChild.preparePersistSelf(this.dbObject.Id);
+				  children.add(this.anotherChild);
 			 }
 
        return children;
     }
 
-     public sObject getDbObject(){
-         return this.dbObject;
-     }
+    public sObject getDbObject(){
+       return this.dbObject;
+    }
 }
 {% endhighlight %}
 
 {% highlight java %}
-class ObjectB implements IPersistable {
+public class ObjectB implements IPersistable {
    //define some object properties here
    public String propX = '';
 
@@ -143,7 +143,7 @@ class ObjectB implements IPersistable {
 {% endhighlight %}
 
 {% highlight java %}
-class ObjectC implements IPersistable {
+public class ObjectC implements IPersistable {
    //define some object properties here
    String propN = '';
 
