@@ -13,7 +13,7 @@ Let's see how to implement and use the `PersistHierarchy` class.
 
 ## PersistHierarchy implementation
 
-{% highlight java %}
+{% highlight java tabsize=2 %}
 public class PersistHierarchy {
 	public static void persistAll(IPersistable parent, Id parentId) {
 		parent.preparePersistSelf(parentId);
@@ -49,7 +49,7 @@ public class PersistHierarchy {
 
 As you saw above, `PersistHierarchy` is accepting objects that are implementing the `IPersistable` interface. You can see the definition of this interface below.
 
-{% highlight java %}
+{% highlight java tabsize=2 %}
 public interface IPersistable {
 	void preparePersistSelf(Id parentId);
 	sObject getDbObject();
@@ -61,7 +61,7 @@ Let's see an example of a few classes that are implementing this interface, and 
 
 ## Sample Implementation
 
-{% highlight java %}
+{% highlight java tabsize=2 %}
 public class ObjectA implements IPersistable {
    //define some object properties here
    public String prop1 = '';
@@ -106,7 +106,7 @@ public class ObjectA implements IPersistable {
 }
 {% endhighlight %}
 
-{% highlight java %}
+{% highlight java tabsize=2 %}
 public class ObjectB implements IPersistable {
    //define some object properties here
    public String propX = '';
@@ -142,7 +142,7 @@ public class ObjectB implements IPersistable {
 }
 {% endhighlight %}
 
-{% highlight java %}
+{% highlight java tabsize=2 %}
 public class ObjectC implements IPersistable {
    //define some object properties here
    String propN = '';
@@ -175,7 +175,7 @@ OK, so above we have a hierarchy that is 3 levels deep. The top of the hierarchy
 
 Potentially, we can have many objects inside this hierarchy, but since this hierarchy is 3 levels deep, we know that our `PersistHierarchy` object will insert all of this records with just 3 INSERT statements. Here is how you persist this hierarchy of objects with a single call:
 
-{% highlight java %}
+{% highlight java tabsize=2 %}
 PersistHierarchy.persistAll('SOME_ID', objA);
 {% endhighlight %}
 
