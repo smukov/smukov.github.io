@@ -5,7 +5,7 @@ published: true
 tags: "javascript visualforce utility"
 ---
 
-I wanted to share with you a utility method that I've created and stored in my `Static Resources`. I'm using this method to dynamically access fields from a Salesforce record object, obtained by `sforce.connection.query`, but its use shouldn't be limited to this. Here's the method below:
+I wanted to share with you a utility function that I've created and stored in my `Static Resources`. I'm using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by `sforce.connection.query`. Here's the function below:
 
 {% highlight javascript %}
 /**
