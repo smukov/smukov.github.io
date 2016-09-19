@@ -5,7 +5,7 @@ published: true
 tags: "javascript visualforce utility"
 ---
 
-In a [previous post](http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/) I've shared with you a JavaScript method that I'm using in order to easily access JavaScript object properties that go 1 to n levels of depth. Now, I've decided to extend on that post and show you how I'm using the same method to achieve the JavaScript array sorting using dynamic properties.
+In a [previous post](http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/) I've shared with you a JavaScript function that I'm using in order to easily access object's properties that go from 1 to n levels of depth. Now, I've decided to extend on that post, and show you how I'm using the same method to achieve the JavaScript array sorting using dynamic properties.
 
 First of all, go to my [previous post](http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/) to see how the `getRecordField` function is defined and used.
 
@@ -71,6 +71,6 @@ test.sort(advancedDynamicSort('-another_property.nested_array.1.x'));
 
 {% endhighlight %}
 
-I have to give credit to the original creator of the `dynamicSort` function, Ege Özcan, and his [StackOverflow answer](http://stackoverflow.com/a/4760279/634951). All I did in the end was adjusting his method to work with my function that dynamically obtains object properties, in order to make the sorter even more flexible.
+I have to give credit to the original creator of the `dynamicSort` function, Ege Özcan, and his [StackOverflow answer](http://stackoverflow.com/a/4760279/634951). All I did in the end was adjusting his method to work with my function that dynamically reads object's properties in order to make the sorter even more flexible.
 
 That's it, I hope you'll find this useful, and if you have any suggestions or critique, feel free to drop me a line in the comments below.
