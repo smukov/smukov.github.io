@@ -13,8 +13,8 @@ Next, let's see how the `advancedDynamicSort` function, that we'll use for array
 
 {% highlight javascript %}
 /**
- * Usage: array.sort(dynamicSort('Property_Name.Sub_Property.Sub_Sub_Property'));
- * for Descending: array.sort(dynamicSort('-Property_Name.Sub_Property.Sub_Sub_Property'));
+ * Usage: array.sort(advancedDynamicSort('Property_Name.Sub_Property.Sub_Sub_Property'));
+ * for Descending: array.sort(advancedDynamicSort('-Property_Name.Sub_Property.Sub_Sub_Property'));
  */
  var advancedDynamicSort = function(property) {
          var sortOrder = 1;
