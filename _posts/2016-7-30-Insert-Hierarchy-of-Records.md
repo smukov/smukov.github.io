@@ -5,9 +5,9 @@ published: true
 tags: "apex"
 ---
 
-I was working on a feature where I needed to connect my company's Salesforce org with two other partners using the SOAP API. When I sent request to partners' services, I would receive back an XML which I would parse into a hierarchy of my wrapper classes, and then I needed to persist all of those objects into our database.
+I was working on a feature where I had to connect my company's Salesforce org with two other partners using the SOAP API. When I send a request to partners' services, I receive back an XML which I parse into a hierarchy of my wrapper classes, and then I needed to persist all of those objects into our database.
 
-I was reading somewhere how to persist Parent-Child records at once when the parents' IDs are not available, and one of the solutions was by using the External Id field. I didn't felt like going this way, so I created a new class called `PersistHierarchy`. Basically, what this class will do is if you have a hierarchy that is N levels deep, it will insert this hierarchy with N insert statements by grouping nodes (records) at each hierarchy level and inserting them together. Since you can perform 150 DML statements during one transaction, that means that you can insert a hierarchy that is 150 levels deep using one call.
+I was reading somewhere how to persist Parent-Child records at once when the parents' IDs are not available, and one of the solutions was by using the External Id field. I didn't felt like going this way, so I created a new class called `PersistHierarchy`. Basically, if you have a hierarchy that is N levels deep, this class will insert the hierarchy with N insert statements by grouping nodes (records), at each hierarchy level, and will then insert them together. Since you can perform 150 DML statements during one transaction, that means that you can insert a hierarchy that is 150 levels deep using one call.
 
 Let's see how to implement and use the `PersistHierarchy` class.
 
@@ -57,7 +57,13 @@ public interface IPersistable {
 }
 {% endhighlight %}
 
-Let's see an example of a few classes that are implementing this interface, and then we'll explain each method.
+Method explanations:
+
+* `preparePersistSelf` - takes in the `parentId`, which it uses to assign a parent to the current record, thus creating the hierarchy, or Parent-Child connection.
+* `getChildrenToPersist` - prepares all the children for persisting by calling the `preparePersistSelf` on each of them, and passing the `parentId`
+* `getDbObject` - returns the `sObject` represented by this wrapper classes
+
+Let's see an example of a few classes that are implementing this interface.
 
 ## Sample Implementation
 
@@ -75,7 +81,7 @@ public class ObjectA implements IPersistable {
 
  public void preparePersistSelf(Id parentId) {
   this.dbObject = new DB_Obj_A();
-  //this object is a root of our hierarchy, if it doesn't attaches to any
+  //this object is a root of our hierarchy, if it doesn't attach to any
   //existing record in the system, it can ignore the 'parentId' that is passed
   //in this method
   this.dbObject.Parent_Id__c = parentId;
@@ -171,21 +177,15 @@ public class ObjectC implements IPersistable {
 }
 {% endhighlight %}
 
-OK, so above we have a hierarchy that is 3 levels deep. The top of the hierarchy is the `ObjectA`, and it has 0 or more direct children of type `ObjectB` , and 0 or 1 child of type `ObjectC`. The `ObjectB` has 0 or more direct children of type `ObjectC`, and `ObjectC` doesn't have any more children under it.
+OK, so above we have a hierarchy that is 3 levels deep. The top of the hierarchy is the `ObjectA`, and it has 0 or more direct children of type `ObjectB` (property: `someChildren`), and 0 or 1 child of type `ObjectC` (property: `anotherChild`). The `ObjectB` has 0 or more direct children of type `ObjectC` (property: `someChildren`), and `ObjectC` doesn't have any more children under it.
 
-Potentially, we can have many objects inside this hierarchy, but since this hierarchy is 3 levels deep, we know that our `PersistHierarchy` object will insert all of this records with just 3 INSERT statements. Here is how you persist this hierarchy of objects with a single call:
+Potentially, we can have many records inside this hierarchy, but since it is 3 levels deep, we know that our `PersistHierarchy` class will insert all of these records with just 3 INSERT statements. Here is how you persist this hierarchy of objects with a single call:
 
 {% highlight java tabsize=4 %}
-PersistHierarchy.persistAll('SOME_ID', objA);
+PersistHierarchy.persistAll(objA, 'SOME_ID');
 {% endhighlight %}
 
 Since the `ObjectA` is the root of our hierarchy, it can potentially have a parent that is some existing record within the Salesforce, in which case `SOME_ID` should be replaced with that record's ID. Otherwise, we can simply pass `null` instead, and handle it properly in `preparePersistSelf` method in `ObjectA` class.
-
-Method explanations:
-
-* `preparePersistSelf` - takes in the `parentId`, which it uses to assign a parent to the current record, thus creating the hierarchy, or Parent-Child connection.
-* `getChildrenToPersist` - prepares all the children for persisting by calling the `preparePersistSelf` on each of them, and passing the `parentId`
-* `getDbObject` - returns the `sObject` represented by this wrapper classes
 
 ## Conclusion
 
