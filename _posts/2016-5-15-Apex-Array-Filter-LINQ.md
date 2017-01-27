@@ -248,7 +248,7 @@ Below you can see some of the ways you could use this `ArrayFilter` class to fil
 Example #1:
 {% highlight java %}
 //filter by String
-List<sObject> filteredArray = ArrayFilter.filter(someArrayToFilter, new ArrayFilter.Filter[]{new ArrayFilter.Filter('Name', '=', 'John Doe')});
+List<sObject> filteredArray = ArrayFilter.filter(someArrayToFilter, new ArrayFilter.Filter[]{new ArrayFilter.Filter('Name', '=', 'John Doe')}, 'OR');
 {% endhighlight %}
 
 Example #2:
@@ -257,7 +257,7 @@ List<ArrayFilter.Filter> filters = new List<ArrayFilter.Filter>();
 filters.add(new ArrayFilter.Filter('Migration_Start_Date__c', '=', Date.newInstance(2000,1,2)));
 filters.add(new ArrayFilter.Filter('Migration_Start_Date__c', '>', Date.newInstance(2010,3,4)));
 
-List<Account> filtered = ArrayFilter.filter(someArrayToFilter,filters);
+List<Account> filtered = ArrayFilter.filter(someArrayToFilter,filters, 'OR');
 {% endhighlight %}
 
 Example #3:
@@ -265,8 +265,9 @@ Example #3:
 //text supports operators: =, !=, CONTAINS, ENDS, STARTS
 List<ArrayFilter.Filter> filters = new List<ArrayFilter.Filter>();
 filters.add(new ArrayFilter.Filter('Phone', 'STARTS',  '0355'));
+filters.add(new ArrayFilter.Filter('NAME', 'STARTS',  'Jo'));
 
-List<Account> filtered = ArrayFilter.filter(someArrayToFilter,filters);
+List<Account> filtered = ArrayFilter.filter(someArrayToFilter,filters, 'AND');
 {% endhighlight %}
 
 ## Ideas for improvement
