@@ -9,19 +9,19 @@ desktop applications with C# and .NET Framework, but I always like to experiment
 professional experiences with Web and Mobile development, Kinect and Leap motion sensors, Unity3d and others, during 60+ projects I completed as a freelancer.
 However, this isn't supposed to be my CV, so if you want to know more about my past work you can checkout my [LinkedIn profile](https://www.linkedin.com/in/smukov).
 
-So, late in 2015 I decided that instead of me being a `jack of all trades` and a `master of none`, that I actually wanted to become a `master of one` particular
-technology. Luckily, during this period I heard about `Salesforce platform`. I did some research and a fair bit of thinking and have decided that over time
-I want to work on and learn Salesforce platform inside and out, become the best and most productive developer I can be, and build my career on it.
+Late in 2015 I decided that instead of me being a **jack of all trades** and a **master of none**, that I actually wanted to become a **master of one** particular
+technology. Luckily, during this period I heard about **Salesforce**. I did some research and a fair bit of thinking and have decided that over time
+I want to work on and learn Salesforce platform inside out. I want to become the best and most productive developer I can be, and build my career on it.
 
-I got certified as a `Salesforce App Builder` in February 2016. My next goal is to obtain `Platform Developer I` certification before the end of 2016, and then
-the `Platform Developer II` before the end of 2017.
+I got certified as a **Salesforce App Builder** in February 2016. My next goal is to obtain **Platform Developer I** certification, and then
+the **Platform Developer II** before the end of 2017.
 
 If you read up to here you probably realized that I'm still a beginner in Salesforce ecosystem, so my code and solutions won't be perfect, but this brings
 us to the reasons behind this blog, so read on.
 
 ### Reasons behind this blog
 
-I started this blog because I've been working as a freelance developer for the major part of my career (5 out of 6 years).
+I started this blog because I've been working as a freelance developer for the major part of my career.
 Half of that time I was working as a sole developer on every project, and on the other half of the projects I was
 employed as a most senior team member. Due to this I had very limited exposure to more senior colleagues and I always
 had to force myself to search the web for best solutions to the problems I was facing, and to educate myself on the
@@ -38,3 +38,7 @@ Thank you and I hope you'll find something useful and/or interesting for yoursel
 ### Contact me
 
 via [LinkedIn](https://www.linkedin.com/in/smukov), [Email](mailto:smukov@gmail.com) or [Twitter](https://www.twitter.com/MiroslavSmukov).
+
+<img src="http://salesforce.stackexchange.com/users/flair/25509.png" width="208" height="58" alt="profile for smukov at Salesforce Stack Exchange, Q&amp;A for Salesforce administrators, implementation experts, developers and anybody in-between" title="profile for smukov at Salesforce Stack Exchange, Q&amp;A for Salesforce administrators, implementation experts, developers and anybody in-between">
+
+
