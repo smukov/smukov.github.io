@@ -12,18 +12,41 @@ I'm usually trying to limit the number of DML statements in Apex, so I'd often q
 {% highlight java %}
 public class ArrayFilter {
 
-  public static List<sObject> filter(List<sObject> arrayToFilter, List<ArrayFilter.Filter> filters){
+  public static List<sObject> filter(List<sObject> arrayToFilter, List<ArrayFilter.Filter> filters, String filterLogic){
     List<sObject> retVal = new List<sObject>();
 
-    for(Integer i = 0; i < arrayToFilter.size(); i++){
-      for(Integer j = 0; j < filters.size(); j++){
-        Filter f = filters[j];
-        if(ArrayFilter.Assert(arrayToFilter[i], f)){
-          retVal.add(arrayToFilter[i]);
-          continue;
+    if(arrayToFilter == null){
+      return retVal;
+    }
+
+    if(filterLogic == 'OR'){
+      for(Integer i = 0; i < arrayToFilter.size(); i++){
+        for(Integer j = 0; j < filters.size(); j++){
+          Filter f = filters[j];
+          if(ArrayFilter.Assert(arrayToFilter[i], f)){
+            retVal.add(arrayToFilter[i]);
+            continue;
+          }
         }
       }
+    }else if(filterLogic == 'AND'){
+      for(Integer i = 0; i < arrayToFilter.size(); i++){
+        Boolean passedTheFilter = true;
+        for(Integer j = 0; j < filters.size(); j++){
+          Filter f = filters[j];
+          if(ArrayFilter.Assert(arrayToFilter[i], f) == false){
+            passedTheFilter = false;
+            break;
+          }
+        }
+        if(passedTheFilter){
+          retVal.add(arrayToFilter[i]);
+        }
+      }
+    }else{
+      throw new ArrayFilterException('Invalid filter logic "' + filterLogic + '" in class ArrayFilter. \n\nAvailable options are "OR" and "AND"');
     }
+
     return retVal;
   }
 
@@ -248,4 +271,4 @@ List<Account> filtered = ArrayFilter.filter(someArrayToFilter,filters);
 
 ## Ideas for improvement
 
-I didn't had the time yet, nor the need, but this class can be easily improved to accept groups of filter conditions to which you could apply the `OR` or `AND` logical operators. The code currently applies `OR` logic to multiple filter conditions.
+I didn't had the time yet, nor the need, but this class can be easily improved to accept groups of filter conditions to which you could apply the `OR` or `AND` logical operators.
