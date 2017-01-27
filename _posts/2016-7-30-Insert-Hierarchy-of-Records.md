@@ -54,8 +54,8 @@ As you saw above, `PersistHierarchy` is accepting objects that are implementing 
 {% highlight java tabsize=4 %}
 public interface IPersistable {
  void preparePersistSelf(Id parentId);
- sObject getDbObject();
  List<IPersistable> getChildrenToPersist();
+ sObject getDbObject();
 }
 {% endhighlight %}
 
