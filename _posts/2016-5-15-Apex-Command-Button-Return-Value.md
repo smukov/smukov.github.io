@@ -18,8 +18,8 @@ Visualforce Page:
     </apex:form>
 
     <script>
-        var processReturnedValue = function(valueReturned){
-            alert('Returned Value: ' + valueReturned);
+        var processReturnedValue = function(val){
+            alert('Returned Value: ' + val);
         };
     </script>
 
@@ -30,10 +30,10 @@ Controller:
 {% highlight java %}
 public class ReturnController {
 
-    public Integer ValueReturned {get; set;}
+    public Integer valueReturned {get; set;}
 
     public ReturnController(){
-        this.ValueReturned = 0;
+        this.valueReturned = 0;
     }
 
     public void callMe(){
@@ -48,5 +48,6 @@ That's it. Try it, it works. Let me know in the comments if there are any drawba
 P.S. The same would work for `apex:actionFunction` that you can call from JavaScript, see below:
 
 {% highlight html%}
-<apex:actionFunction action="{!callMe}" name="actionFuncName" oncomplete="processReturnedValue({!valueReturned}); "/>
+<apex:actionFunction action="{!callMe}" name="actionFuncName" 
+    oncomplete="processReturnedValue({!valueReturned}); "/>
 {% endhighlight %}
