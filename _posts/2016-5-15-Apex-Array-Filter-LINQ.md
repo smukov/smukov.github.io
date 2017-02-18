@@ -269,7 +269,3 @@ filters.add(new ArrayFilter.Filter('NAME', 'STARTS',  'Jo'));
 
 List<Account> filtered = ArrayFilter.filter(someArrayToFilter,filters, 'AND');
 {% endhighlight %}
-
-## Ideas for improvement
-
-I didn't had the time yet, nor the need, but this class can be easily improved to accept groups of filter conditions to which you could apply the `OR` or `AND` logical operators.
