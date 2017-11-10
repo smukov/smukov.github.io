@@ -85,6 +85,7 @@ public class ObjectAWrapper implements IPersistable {
   //if the object is a root of the hierarchy, it doesn't need to  attach to any
   //existing record in the system, so it can potentially ignore the 
   //'parentId' that is passed in this method
+  this.dbObject = new Db_Obj_A();
   this.dbObject.Parent_Id__c = parentId;
  }
 
@@ -125,6 +126,7 @@ public class ObjectBWrapper implements IPersistable {
  List < ObjectBWrapper > childrenB;
 
  public void preparePersistSelf(Id parentId) {
+  this.dbObject = new DB_Obj_B();
   this.dbObject.Parent_Id__c = parentId;
  }
 
