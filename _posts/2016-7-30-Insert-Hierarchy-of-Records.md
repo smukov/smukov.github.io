@@ -133,7 +133,7 @@ public class ObjectBWrapper implements IPersistable {
  public List < IPersistable > getChildrenToPersist() {
   List < IPersistable > children = new List < IPersistable > ();
 
-  for (ObjectBWrapper o: childrenB) {
+  for (ObjectBWrapper o: childrenB) { 
    o.preparePersistSelf(this.dbObject.Id);
    children.add(o);
   }
