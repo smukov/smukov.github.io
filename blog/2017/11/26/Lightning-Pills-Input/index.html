@@ -101,9 +101,9 @@ The component will also be able to validate the provided input upon entering, an
 
 <h2 id="getting-started">Getting started</h2>
 
-<p>First of all, the implementation will use some utility code for generating random GUID and validating the input pattern with regular expressions. This code is stored as a <code class="highlighter-rouge">static resource</code> and you’ll need to upload it to your org for this implementation to work. You can find this static resource <a href="/download/11-2017/26/LEX.zip">here</a>.</p>
+<p>First of all, the implementation will use some utility code for generating random GUID and validating the input pattern with regular expressions. This code is stored as a <code class="highlighter-rouge">static resource</code> and you’ll need to upload it to your org for this implementation to work. You can find the static resource <a href="/download/11-2017/26/LEX.zip">here</a>.</p>
 
-<p>We’ll call this custom component <code class="highlighter-rouge">pillsInput</code>, so go ahead and create it and set the following code in their respective component files:</p>
+<p>We’ll call this custom component <code class="highlighter-rouge">pillsInput</code>, so go ahead create it and set the following markup and code in their respective component files:</p>
 
 <h2 id="pillsinputcmp">pillsInput.cmp</h2>
 
@@ -148,7 +148,7 @@ The component will also be able to validate the provided input upon entering, an
 
 <span class="nt">&lt;/aura:component&gt;</span></code></pre></figure>
 
-<p>Let’s get over the attributes. The <code class="highlighter-rouge">label</code>, <code class="highlighter-rouge">placeholderText</code>, <code class="highlighter-rouge">name</code>, and <code class="highlighter-rouge">value</code> attributes are pretty much standard attributes for any Salesforce Lightning component used for data input. The more interesting attributes are the following bunch:</p>
+<p>Let’s go over the attributes. The <code class="highlighter-rouge">label</code>, <code class="highlighter-rouge">placeholderText</code>, <code class="highlighter-rouge">name</code>, and <code class="highlighter-rouge">value</code> attributes are pretty much standard for any Salesforce Lightning component used for data input. The more interesting attributes are the following bunch:</p>
 
 <ul>
   <li><code class="highlighter-rouge">delimiter</code> - this is a character that is going to be used to split the inputted string into pills. This approach, for example, enables the user to copy/paste a long list of IP Addresses separated by space (or by any other specified delimiter value), which would then be separated into individual pills.</li>
@@ -170,17 +170,6 @@ The component will also be able to validate the provided input upon entering, an
     <span class="nx">helper</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
   <span class="p">},</span>
 
-  <span class="na">onKeyUpInput</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">delimiter</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiter'</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">inputText</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">'inputText'</span><span class="p">).</span><span class="nx">getElement</span><span class="p">();</span>
-    <span class="kd">var</span> <span class="nx">currentInput</span> <span class="o">=</span> <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="nx">currentInput</span><span class="p">[</span><span class="nx">currentInput</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">delimiter</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">helper</span><span class="p">.</span><span class="nx">addNewPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">currentInput</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">delimiter</span><span class="p">));</span>
-      <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-
   <span class="na">handlePillsChanged</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">helper</span><span class="p">.</span><span class="nx">parsePillsToField</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
   <span class="p">},</span>
@@ -189,6 +178,17 @@ The component will also be able to validate the provided input upon entering, an
     <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.valueDataLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">)</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.valueDataLoaded'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
       <span class="nx">helper</span><span class="p">.</span><span class="nx">parseFieldToPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="na">onKeyUpInput</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">delimiter</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiter'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">inputText</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">'inputText'</span><span class="p">).</span><span class="nx">getElement</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">currentInput</span> <span class="o">=</span> <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">currentInput</span><span class="p">[</span><span class="nx">currentInput</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">delimiter</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">helper</span><span class="p">.</span><span class="nx">addNewPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">currentInput</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">delimiter</span><span class="p">));</span>
+      <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
     <span class="p">}</span>
   <span class="p">},</span>
 
@@ -207,9 +207,9 @@ The component will also be able to validate the provided input upon entering, an
   <span class="p">}</span>
 <span class="p">})</span></code></pre></figure>
 
-<p>The controller is handling various events that occur within the component. The most important handler is the <code class="highlighter-rouge">onKeyUpInput</code> one. This handler will evaluate if the latest key captured by the <code class="highlighter-rouge">pillsInput</code> component is a specified <code class="highlighter-rouge">delimiter</code> or an <code class="highlighter-rouge">enter</code> key. If one of those is true, then the inputted text will be added as a pill, and the input element will be cleared.</p>
+<p>The controller is handling various events that occur within the component. The most important handler is the <code class="highlighter-rouge">onKeyUpInput</code>. This handler will evaluate if the latest key captured by the <code class="highlighter-rouge">pillsInput</code> component is a specified <code class="highlighter-rouge">delimiter</code> or an <code class="highlighter-rouge">enter</code> key. If one of those is true, then the inputted text will be added as a pill, and the input element will be cleared.</p>
 
-<p><code class="highlighter-rouge">handleValueChanged</code> function is there to parse the initially binded <code class="highlighter-rouge">value</code> attribute (e.g. - binded with a sObject field) into pills. After that initial action we need to set the <code class="highlighter-rouge">valueDataLoaded</code> flag in order to avoid calling this code when we add new pills. Now let’s see what is in the component’s helper.</p>
+<p><code class="highlighter-rouge">handleValueChanged</code> function is there to parse the initially binded <code class="highlighter-rouge">value</code> attribute (e.g. - binded with a sObject field) into pills. After that initial action we need to set the <code class="highlighter-rouge">valueDataLoaded</code> flag in order to avoid calling this code when we add new pills. Now let’s see what is in the component’s <code class="highlighter-rouge">helper</code>.</p>
 
 <h2 id="pillsinputhelperjs">pillsInputHelper.js</h2>
 
@@ -290,7 +290,7 @@ The component will also be able to validate the provided input upon entering, an
 
 <h2 id="how-to-use-it">How to use it?</h2>
 
-<p>Using the component is rather easy - just paste the below code snippet to your Lightning Component, bind the <code class="highlighter-rouge">value</code> attribute to your appropriate object (or leave it blank “” for a quick test), and you are ready to go.</p>
+<p>Using the component is rather easy - just paste the below code snippet to your Lightning Component, bind the <code class="highlighter-rouge">value</code> attribute to your appropriate object (or leave it blank <code class="highlighter-rouge">""</code> for a quick test), and you are ready to go.</p>
 
 <figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;c:PillsInput</span> <span class="na">label=</span><span class="s">"IP Addresses"</span> <span class="na">name=</span><span class="s">"ipAddresses"</span>
     <span class="na">placeholderText=</span><span class="s">"Input IP Addresses separated by space"</span>
@@ -298,13 +298,13 @@ The component will also be able to validate the provided input upon entering, an
 
 <p>The end result should look something like this:</p>
 
-<p><a href="/images/11-2017/26/pillsInput.png" target="_blank"><img src="/images/11-2017/26/pillsInput.png" alt="pills_input" /></a></p>
+<p><a href="/images/11-2017/26/pillsInput.PNG" target="_blank"><img src="/images/11-2017/26/pillsInput.PNG" alt="pills_input" /></a></p>
 
 <h2 id="possible-improvements">Possible improvements</h2>
 
 <p>There are a couple of possible improvements &amp; optimizations that I can think of right now. The one would be to add a <code class="highlighter-rouge">class</code> attribute to provide additional styling to the component. The validation logic could also be improved to optionally prevent users from saving the input if there are invalid pills.</p>
 
-<p>That’s it. I hope that somebody will find this component useful, and, as always, feel free to leave your comments below.</p>
+<p>I hope that somebody will find this component useful, and, as always, feel free to leave your comments below.</p>
 
   </div>
 
