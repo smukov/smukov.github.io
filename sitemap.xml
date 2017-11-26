@@ -1,87 +1,188 @@
----
-layout: null
-sitemap:
-  exclude: 'yes'
----
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  {% for post in site.posts %}
-    {% unless post.published == false %}
+  
+    
     <url>
-      <loc>{{ site.url }}{{ post.url }}</loc>
-      {% if post.sitemap.lastmod %}
-        <lastmod>{{ post.sitemap.lastmod | date: "%Y-%m-%d" }}</lastmod>
-      {% elsif post.date %}
-        <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
-      {% else %}
-        <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
-      {% endif %}
-      {% if post.sitemap.changefreq %}
-        <changefreq>{{ post.sitemap.changefreq }}</changefreq>
-      {% else %}
+      <loc>http://smukov.github.io/blog/2016/07/30/Insert-Hierarchy-of-Records/</loc>
+      
+        <lastmod>2016-07-30T00:00:00+02:00</lastmod>
+      
+      
         <changefreq>monthly</changefreq>
-      {% endif %}
-      {% if post.sitemap.priority %}
-        <priority>{{ post.sitemap.priority }}</priority>
-      {% else %}
+      
+      
         <priority>0.5</priority>
-      {% endif %}
+      
     </url>
-    {% endunless %}
-  {% endfor %}
-
-  {% for page in site.pages %}
-    {% assign split_path = page.path | split: "." %}
-    {% assign extension = split_path | last %}
-
-    {% if page.sitemap.exclude != "yes" and extension == "html" and page.path != "/404.html" %}
+    
+  
+    
     <url>
-      <loc>{{ site.url }}{{ page.permalink | remove: "index.html" }}</loc>
-      {% if page.sitemap.lastmod %}
-        <lastmod>{{ page.sitemap.lastmod | date: "%Y-%m-%d" }}</lastmod>
-      {% elsif page.date %}
-        <lastmod>{{ page.date | date_to_xmlschema }}</lastmod>
-      {% else %}
-        <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
-      {% endif %}
-      {% if page.sitemap.changefreq %}
-        <changefreq>{{ page.sitemap.changefreq }}</changefreq>
-      {% else %}
+      <loc>http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/</loc>
+      
+        <lastmod>2016-06-03T00:00:00+02:00</lastmod>
+      
+      
         <changefreq>monthly</changefreq>
-      {% endif %}
-      {% if page.sitemap.priority %}
-        <priority>{{ page.sitemap.priority }}</priority>
-      {% else %}
-        <priority>0.3</priority>
-      {% endif %}
+      
+      
+        <priority>0.5</priority>
+      
     </url>
-    {% endif %}
-  {% endfor %}
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/</loc>
+      
+        <lastmod>2016-06-03T00:00:00+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/05/15/Visualforce-Page-to-Include-Header-and-Sidebar/</loc>
+      
+        <lastmod>2016-05-15T00:00:00+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/05/15/Apex-Command-Button-Return-Value/</loc>
+      
+        <lastmod>2016-05-15T00:00:00+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/</loc>
+      
+        <lastmod>2016-05-15T00:00:00+02:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/03/13/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/</loc>
+      
+        <lastmod>2016-03-13T00:00:00+01:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/</loc>
+      
+        <lastmod>2016-03-12T00:00:00+01:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
+      <loc>http://smukov.github.io/blog/2016/03/11/about-me/</loc>
+      
+        <lastmod>2016-03-11T00:00:00+01:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
 
-  {% for collection in site.collections %}
-    {% if collection[1].output %}
-      {% for doc in collection[1].docs %}
-        <url>
-          <loc>{{ site.url }}{{ doc.url | remove: "index.html" }}</loc>
-          {% if doc.sitemap.lastmod %}
-            <lastmod>{{ doc.sitemap.lastmod | date: "%Y-%m-%d" }}</lastmod>
-          {% elsif doc.date %}
-            <lastmod>{{ doc.date | date_to_xmlschema }}</lastmod>
-          {% else %}
-            <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
-          {% endif %}
-          {% if doc.sitemap.changefreq %}
-            <changefreq>{{ doc.sitemap.changefreq }}</changefreq>
-          {% else %}
-            <changefreq>monthly</changefreq>
-          {% endif %}
-          {% if doc.sitemap.priority %}
-            <priority>{{ doc.sitemap.priority }}</priority>
-          {% else %}
-            <priority>0.3</priority>
-          {% endif %}
-        </url>
-      {% endfor %}
-    {% endif %}
-  {% endfor %}
+  
+    
+    
+
+    
+  
+    
+    
+
+    
+  
+    
+    
+
+    
+    <url>
+      <loc>http://smukov.github.io</loc>
+      
+        <lastmod>2017-11-26T12:27:36+01:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.3</priority>
+      
+    </url>
+    
+  
+    
+    
+
+    
+  
+    
+    
+
+    
+  
+    
+    
+
+    
+  
+
+  
+    
+  
 </urlset>
