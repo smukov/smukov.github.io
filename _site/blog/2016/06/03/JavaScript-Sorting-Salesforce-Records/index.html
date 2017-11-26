@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sorting Salesforce Records with JavaScript – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.
+
+" />
+    <meta property="og:description" content="In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Sorting Salesforce Records with JavaScript" />
+    <meta property="twitter:title" content="Sorting Salesforce Records with JavaScript" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Sorting Salesforce Records with JavaScript - Smukov on Salesforce</title>
+<meta property="og:title" content="Sorting Salesforce Records with JavaScript" />
+<meta name="description" content="In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties." />
+<meta property="og:description" content="In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties." />
+<link rel="canonical" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-06-03T00:00:00+02:00" />
+<link rel="next" href="http://smukov.github.io/blog/2016/07/30/Insert-Hierarchy-of-Records/" title="Insert a Hierarchy of Records" />
+<link rel="prev" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" title="Accessing Salesforce Record Fields with JavaScript" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Sorting Salesforce Records with JavaScript",
+    "datePublished": "2016-06-03T00:00:00+02:00",
+    "description": "In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.",
+    "url": "http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Sorting Salesforce Records with JavaScript</h1>
+
+  <div class="entry">
+    <p>In a <a href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/">previous post</a> I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.</p>
+
+<p>First of all, go to my <a href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/">previous post</a> to see how the <code class="highlighter-rouge">getRecordField</code> function is defined and used.</p>
+
+<p>Next, let’s see how the <code class="highlighter-rouge">advancedDynamicSort</code> function, that we’ll use for array sorting, looks like:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Usage: array.sort(advancedDynamicSort('Property_Name.Sub_Property.Sub_Sub_Property'));
+ * for Descending: array.sort(advancedDynamicSort('-Property_Name.Sub_Property.Sub_Sub_Property'));
+ */</span>
+ <span class="kd">var</span> <span class="nx">advancedDynamicSort</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
+         <span class="kd">var</span> <span class="nx">sortOrder</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+         <span class="k">if</span><span class="p">(</span><span class="nx">property</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">"-"</span><span class="p">)</span> <span class="p">{</span>
+             <span class="nx">sortOrder</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+             <span class="nx">property</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+         <span class="p">}</span>
+         <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+             <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">property</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nx">getRecordField</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span><span class="nx">property</span><span class="p">))</span> <span class="p">?</span> <span class="o">-</span><span class="mi">1</span> <span class="p">:</span> <span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">property</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nx">getRecordField</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span><span class="nx">property</span><span class="p">))</span> <span class="p">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+             <span class="k">return</span> <span class="nx">result</span> <span class="o">*</span> <span class="nx">sortOrder</span><span class="p">;</span>
+         <span class="p">}</span>
+     <span class="p">};</span></code></pre></figure>
+
+<p>Sample use:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">[{</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'something'</span><span class="p">,</span>
+  <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="na">nested_property</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'z'</span><span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">},{</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'something else'</span><span class="p">,</span>
+  <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="na">nested_property</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'a'</span><span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">},{</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'random'</span><span class="p">,</span>
+  <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="na">nested_property</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'s'</span><span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}];</span>
+
+<span class="c1">//sort by first level property</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="s1">'one_property'</span><span class="p">));</span>
+
+<span class="c1">//sort by property of a nested object</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="s1">'another_property.nested_property'</span><span class="p">));</span>
+
+<span class="c1">//you can even access an array objects, and sort descending by</span>
+<span class="c1">//prepending minus (-) in front of the property string</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="s1">'-another_property.nested_array.1.x'</span><span class="p">));</span></code></pre></figure>
+
+<p>I have to give credit to the original creator of the <code class="highlighter-rouge">dynamicSort</code> function, Ege Özcan, and his <a href="http://stackoverflow.com/a/4760279/634951">StackOverflow answer</a>. All I did in the end was adjusting his method to work with my function that dynamically reads object’s properties in order to make the sorter even more flexible.</p>
+
+<p>That’s it, I hope you’ll find this useful, and if you have any suggestions or critique, feel free to drop me a line in the comments below.</p>
+
+  </div>
+
+  <div class="date">
+    Written on June  3, 2016
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/&title=Sorting Salesforce Records with JavaScript&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Sorting Salesforce Records with JavaScript&url=http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/',
+		  'title': 'Sorting Salesforce Records with JavaScript'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>

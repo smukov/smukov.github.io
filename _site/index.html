@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="Ideas and experiences of a Salesforce Developer">
+    <meta property="og:description" content="Ideas and experiences of a Salesforce Developer" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Smukov on Salesforce - Ideas and experiences of a Salesforce Developer</title>
+<meta property="og:title" content="Smukov on Salesforce" />
+<meta name="description" content="Ideas and experiences of a Salesforce Developer" />
+<meta property="og:description" content="Ideas and experiences of a Salesforce Developer" />
+<link rel="canonical" href="http://smukov.github.io/" />
+<meta property="og:url" content="http://smukov.github.io/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "Smukov on Salesforce",
+    "headline": "Smukov on Salesforce",
+    "description": "Ideas and experiences of a Salesforce Developer",
+    "url": "http://smukov.github.io/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <div class="posts">
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/07/30/Insert-Hierarchy-of-Records/">Insert a Hierarchy of Records</a></h1>
+
+      <div class="entry">
+        <p>I was working on a feature where I had to connect my company’s Salesforce org with two other partners using the SOAP API. When I send a request to partners’ services, I receive back an XML which I parse into a hierarchy of my wrapper classes, and then I needed to persist all of those objects into our database.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/07/30/Insert-Hierarchy-of-Records/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag apex tag-on-post" data-tag="apex">apex</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/">Sorting Salesforce Records with JavaScript</a></h1>
+
+      <div class="entry">
+        <p>In a <a href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/">previous post</a> I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag javascript tag-on-post" data-tag="javascript">javascript</div>
+        
+          <div class="tag visualforce tag-on-post" data-tag="visualforce">visualforce</div>
+        
+          <div class="tag utility tag-on-post" data-tag="utility">utility</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/">Accessing Salesforce Record Fields with JavaScript</a></h1>
+
+      <div class="entry">
+        <p>I wanted to share with you a utility function that I’ve created and stored in my <code class="highlighter-rouge">Static Resources</code>. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by <code class="highlighter-rouge">sforce.connection.query</code> or <code class="highlighter-rouge">Remote Action</code>. Here’s the function below:</p>
+
+
+      </div>
+
+      <a href="/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag javascript tag-on-post" data-tag="javascript">javascript</div>
+        
+          <div class="tag visualforce tag-on-post" data-tag="visualforce">visualforce</div>
+        
+          <div class="tag utility tag-on-post" data-tag="utility">utility</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/05/15/Visualforce-Page-to-Include-Header-and-Sidebar/">Make a Managed Visualforce Page show Header and Sidebar</a></h1>
+
+      <div class="entry">
+        <p>Let’s say you’ve installed some managed package to your org and there’s a visualforce page in this package that doesn’t include <em>header</em> and <em>sidebar</em> . You need to redirect your users to this visualforce page, but the page breaks the look and feel by hiding the Salesforce header and sidebar. You can’t access or change the managed package’s code, so what else can you do?</p>
+
+
+      </div>
+
+      <a href="/blog/2016/05/15/Visualforce-Page-to-Include-Header-and-Sidebar/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag managed tag-on-post" data-tag="managed">managed</div>
+        
+          <div class="tag visualforce tag-on-post" data-tag="visualforce">visualforce</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/05/15/Apex-Command-Button-Return-Value/">apex:commandButton with Return Value</a></h1>
+
+      <div class="entry">
+        <p>Below you can see a sample code that can be used to return a value from an Apex controller to a Visualforce page when calling a controller function from an <code class="highlighter-rouge">apex:commandButton</code>. This approach doesn’t require you to use <code class="highlighter-rouge">@RemoteAction</code> (i.e. static methods), so you doesn’t lose the stateful nature of your page, and your controller’s method can access all the variables within that controller instance.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/05/15/Apex-Command-Button-Return-Value/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag apex tag-on-post" data-tag="apex">apex</div>
+        
+          <div class="tag visualforce tag-on-post" data-tag="visualforce">visualforce</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/05/15/Apex-Array-Filter-LINQ/">Array Filter</a></h1>
+
+      <div class="entry">
+        <p>Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the <code class="highlighter-rouge">for</code> loop.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/05/15/Apex-Array-Filter-LINQ/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag apex tag-on-post" data-tag="apex">apex</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/03/13/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/">Time-Dependent Workflow that triggers in less than 1 hour</a></h1>
+
+      <div class="entry">
+        <p>As you probably know, Salesforce <code class="highlighter-rouge">Time-Based Triggers</code> can trigger before (or after) certain number of days (or hours) from a specified <code class="highlighter-rouge">Date/Time</code> field on the record that triggered the <code class="highlighter-rouge">workflow</code>. The valid range is 0 to 999 days or hours, and you can’t use decimal values, only integers. This means that out of the box you can’t, for example, make a workflow be triggered <code class="highlighter-rouge">15 minutes</code> or <code class="highlighter-rouge">half an hour</code> after the rule was evaulated. However, in case you really want to do something like this, there is a workaround.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/03/13/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag workflow tag-on-post" data-tag="workflow">workflow</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/">Run Time-Dependent Workflow on every record edit</a></h1>
+
+      <div class="entry">
+        <p>If you ever wanted to create a Time-Dependent workflow rule that will be triggered <em>every</em> time a record is edited,
+your first instinct was probably to create a rule that is evaluated when a record is <code class="highlighter-rouge">created, and every time it's edited</code>.
+However, as the image below shows, <code class="highlighter-rouge">you cannot add time-dependent workflow actions with this option</code>.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/" class="read-more">Read More</a>
+    <div class="tags">
+        
+          <div class="tag workflow tag-on-post" data-tag="workflow">workflow</div>
+        
+    </div>
+
+    </article>
+  
+    <article class="post">
+
+      <h1><a href="/blog/2016/03/11/about-me/">About me and this blog</a></h1>
+
+      <div class="entry">
+        <p>My name is Miroslav Smukov, I’m from Serbia, and I’ve been a professional software developer since 2010. For the majority of my career I’ve been developing
+desktop applications with C# and .NET Framework, but I always like to experiment with other fields and technologies so I had some
+professional experiences with Web and Mobile development, Kinect and Leap motion sensors, Unity3d and others, during 60+ projects I completed as a freelancer.
+However, this isn’t supposed to be my CV, so if you want to know more about my past work you can checkout my <a href="https://www.linkedin.com/in/smukov">LinkedIn profile</a>.</p>
+
+
+      </div>
+
+      <a href="/blog/2016/03/11/about-me/" class="read-more">Read More</a>
+    <div class="tags">
+        
+    </div>
+
+    </article>
+  
+</div>
+
+<div id="tag-pane">
+    <p class="filter-caption">
+        Filter by tag:
+    </p>
+</div>
+
+	<script>
+		var getTagNamesFromPost = function(post){
+			var tags = post.querySelectorAll(".tag");
+			var tagNames = [];
+				for(var i = 0; i < tags.length; i++)
+				{
+					var tag = tags[i];
+					var tagName = tag.classList[1];
+					tagNames.push(tagName);
+				}
+			return tagNames;
+		}
+
+		var getTagsAndPosts = function(posts){
+			var allTagNames = [];
+			var tagsAndPosts = {};
+
+			for(var i = 0; i < posts.length; i++)
+			{
+				var post = posts[i];
+
+				var tagNames = getTagNamesFromPost(post);
+				for(var j = 0; j < tagNames.length; j++)
+				{
+					var tagName = tagNames[j];
+					allTagNames.push(tagName)
+
+					if(tagsAndPosts[tagName] === undefined)
+						tagsAndPosts[tagName] = [i];
+					else
+						tagsAndPosts[tagName].push(i);
+				}
+			}
+
+			return tagsAndPosts;
+		};
+		var addClass = function(element, className){
+			if (element.classList)
+				element.classList.add(className);
+			else
+				element.className += ' ' + className;
+		};
+
+		var hideAllPosts = function(posts){
+			for(var i = 0; i < posts.length; i++)
+			{
+				posts[i].style.display = 'none';
+			}
+		};
+
+		var displayPosts = function(allPosts, postsToDisplay){
+			hideAllPosts(allPosts);
+
+			for(var i = 0; i < postsToDisplay.length; i++)
+			{
+				var indexToShow = postsToDisplay[i];
+				allPosts[indexToShow].style.display = '';
+			}
+		};
+
+		var hasClass = function(element, cls) {
+			return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+		};
+
+		var removeClass = function(element, className){
+			element.className = element.className.replace(className, "");
+		};
+
+		var removeSelectedClassFromAllTags = function(tagsAndTagSelectorElements, selectedClass){
+			for(var tagName in tagsAndTagSelectorElements)
+			{
+				if(tagsAndTagSelectorElements.hasOwnProperty(tagName))
+				{
+					removeClass(tagsAndTagSelectorElements[tagName], selectedClass);
+				}
+			}
+		};
+
+		document.addEventListener("DOMContentLoaded", function(event) {
+			var posts = document.querySelectorAll('.post');
+			var tagsAndPosts = getTagsAndPosts(posts);
+
+			var divElement = document.createElement("div");
+			addClass(divElement, "tag-selectors");
+
+
+			var clearText = "clear";
+			var clearTagsElement = document.createElement("p");
+			addClass(clearTagsElement, "clear-tags");
+            addClass(clearTagsElement, "tag");
+            addClass(clearTagsElement, "tag-with-hover");
+            addClass(clearTagsElement, "selected");
+			clearTagsElement.innerText = clearText;
+			divElement.appendChild(clearTagsElement);
+
+			var selectedClass = "selected";
+
+			var tagsAndTagSelectorElements = {}
+			tagsAndTagSelectorElements[clearText] = clearTagsElement;
+
+			for(var tagName in tagsAndPosts)
+			{
+				if(tagsAndPosts.hasOwnProperty(tagName))
+				{
+					var postsContainingTag = tagsAndPosts[tagName];
+					var numberOfPosts = postsContainingTag.length;
+					var classToAdd = "count-" + numberOfPosts;
+
+					var tagPElement = document.createElement("p");
+                    addClass(tagPElement, "tag");
+                    addClass(tagPElement, "tag-selector");
+                    addClass(tagPElement, "tag-with-hover");
+					addClass(tagPElement, classToAdd);
+					tagPElement.textContent = tagName;
+
+					tagsAndTagSelectorElements[tagName] = tagPElement;
+
+					divElement.appendChild(tagPElement);
+				}
+			}
+
+			var clearShowing = "showing";
+
+			for(var tagName in tagsAndTagSelectorElements)
+			{
+				if(tagsAndTagSelectorElements.hasOwnProperty(tagName))
+				{
+					tagsAndTagSelectorElements[tagName]
+						.addEventListener("click",
+						function(eventObj) {
+							var tagName = eventObj.currentTarget.innerText;
+
+							removeSelectedClassFromAllTags(tagsAndTagSelectorElements, selectedClass);
+
+							if(tagName === clearText)
+							{
+                                addClass(clearTagsElement, "selected");
+								removeClass(clearTagsElement, clearShowing);
+								var allPosts = [];
+								for(var n = 0; n < posts.length; n++)
+									allPosts.push(n);
+
+								displayPosts(posts, allPosts);
+								return;
+							}
+							addClass(clearTagsElement, clearShowing);
+                            removeClass(clearTagsElement, "selected");
+							addClass(tagsAndTagSelectorElements[tagName], selectedClass);
+							var postsToShow = tagsAndPosts[tagName];
+							displayPosts(posts, postsToShow);
+						});
+				}
+			}
+
+			var tagPaneElement = document.getElementById("tag-pane");
+			tagPaneElement.appendChild(divElement);
+		});
+	</script>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/',
+		  'title': ''
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>

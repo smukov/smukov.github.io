@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Time-Dependent Workflow that triggers in less than 1 hour – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="As you probably know, Salesforce Time-Based Triggers can trigger before (or after) certain number of days (or hours) from a specified Date/Time field on the record that triggered the workflow. The valid range is 0 to 999 days or hours, and you can’t use decimal values, only integers. This means that out of the box you can’t, for example, make a workflow be triggered 15 minutes or half an hour after the rule was evaulated. However, in case you really want to do something like this, there is a workaround.
+
+" />
+    <meta property="og:description" content="As you probably know, Salesforce Time-Based Triggers can trigger before (or after) certain number of days (or hours) from a specified Date/Time field on the record that triggered the workflow. The valid range is 0 to 999 days or hours, and you can’t use decimal values, only integers. This means that out of the box you can’t, for example, make a workflow be triggered 15 minutes or half an hour after the rule was evaulated. However, in case you really want to do something like this, there is a workaround.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Time-Dependent Workflow that triggers in less than 1 hour" />
+    <meta property="twitter:title" content="Time-Dependent Workflow that triggers in less than 1 hour" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Time-Dependent Workflow that triggers in less than 1 hour</h1>
+
+  <div class="entry">
+    <p>As you probably know, Salesforce <code class="highlighter-rouge">Time-Based Triggers</code> can trigger before (or after) certain number of days (or hours) from a specified <code class="highlighter-rouge">Date/Time</code> field on the record that triggered the <code class="highlighter-rouge">workflow</code>. The valid range is 0 to 999 days or hours, and you can’t use decimal values, only integers. This means that out of the box you can’t, for example, make a workflow be triggered <code class="highlighter-rouge">15 minutes</code> or <code class="highlighter-rouge">half an hour</code> after the rule was evaulated. However, in case you really want to do something like this, there is a workaround.</p>
+
+<h3 id="step-1-create-a-new-custom-formula-field">Step 1: Create a new custom Formula field</h3>
+
+<p>Let’s say that, for some reason, you want to create a task 15 minutes after an Opportunity record was updated. First, you’ll need to create a new <code class="highlighter-rouge">custom formula field</code> that evaluates to a <code class="highlighter-rouge">Date/Time value</code>. We are going to call this new field <code class="highlighter-rouge">Record Edited Time Minus 45</code>, and set its formula to <code class="highlighter-rouge">LastModifiedDate - 45 * 0.00069</code>.</p>
+
+<blockquote>
+  <p>In a <code class="highlighter-rouge">Date/Time</code> formula field <code class="highlighter-rouge">0.00069</code> represents 1 minute. So, this part of our formula <code class="highlighter-rouge">45 * 0.00069</code> actually represents 45 minutes.</p>
+</blockquote>
+
+<p>As for security, make this field accessible to all users, but don’t place it on any layout.</p>
+
+<p>After we save our new formula field, every time we edit an Opportunity record, this field will hold a <code class="highlighter-rouge">Date/Time</code> value that is 45 minutes in the past from the time the record was edited.</p>
+
+<h3 id="step-2-make-your-time-based-workflow-use-the-new-formula-field">Step 2: Make your Time-Based Workflow use the new formula field</h3>
+
+<p>Now that you have created the required formula field you can go ahead and start setting up a <code class="highlighter-rouge">workflow</code> with a <code class="highlighter-rouge">Time-Dependent Action</code> that should fire 15 minutes after an Opportunity record was edited.</p>
+
+<p>I’m not going to cover here how to create a <code class="highlighter-rouge">Workflow</code>, you should already know this, just keep in mind when creating a new <code class="highlighter-rouge">Time-Dependent Action</code> to set it to fire 1 hour after the <code class="highlighter-rouge">Opportunity: Record Edited Time Minus 45</code>, as shown in the image below.</p>
+
+<p><a href="/images/3-2016/13/Formula_2.png" target="_blank"><img src="/images/3-2016/13/Formula_2.png" alt="workflow_formula" /></a></p>
+
+<p>The last step should be to acivate your <code class="highlighter-rouge">workflow</code> and test it out.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Now you know how to create a <code class="highlighter-rouge">Time-Dependent Workflow Rule</code> that will trigger in less than 1 hour after the record that triggered the workflow is edited and the workflow is evaluated.</p>
+
+<p>Don’t forget to add your comments below.</p>
+
+<blockquote>
+  <p>I should point out that <code class="highlighter-rouge">Time-Based Worfklow Actions</code> are batched together and will be triggered within 1 hour of their designated time. This means that even if we set that an action should be executed 15 minutes after the record was edited, this still doesn’t guarantee that it will be executed <strong>exactly</strong> after 15 minutes.</p>
+</blockquote>
+
+  </div>
+
+  <div class="date">
+    Written on March 13, 2016
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/&title=Time-Dependent Workflow that triggers in less than 1 hour&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Time-Dependent Workflow that triggers in less than 1 hour&url=http://smukov.github.io/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/',
+		  'title': 'Time-Dependent Workflow that triggers in less than 1 hour'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>

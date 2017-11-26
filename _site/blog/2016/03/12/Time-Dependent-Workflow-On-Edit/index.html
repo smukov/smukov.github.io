@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Run Time-Dependent Workflow on every record edit – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="If you ever wanted to create a Time-Dependent workflow rule that will be triggered every time a record is edited,
+your first instinct was probably to create a rule that is evaluated when a record is created, and every time it's edited.
+However, as the image below shows, you cannot add time-dependent workflow actions with this option.
+
+" />
+    <meta property="og:description" content="If you ever wanted to create a Time-Dependent workflow rule that will be triggered every time a record is edited,
+your first instinct was probably to create a rule that is evaluated when a record is created, and every time it's edited.
+However, as the image below shows, you cannot add time-dependent workflow actions with this option.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Run Time-Dependent Workflow on every record edit" />
+    <meta property="twitter:title" content="Run Time-Dependent Workflow on every record edit" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Run Time-Dependent Workflow on every record edit - Smukov on Salesforce</title>
+<meta property="og:title" content="Run Time-Dependent Workflow on every record edit" />
+<meta name="description" content="If you ever wanted to create a Time-Dependent workflow rule that will be triggered every time a record is edited,your first instinct was probably to create a rule that is evaluated when a record is created, and every time it&#39;s edited.However, as the image below shows, you cannot add time-dependent workflow actions with this option." />
+<meta property="og:description" content="If you ever wanted to create a Time-Dependent workflow rule that will be triggered every time a record is edited,your first instinct was probably to create a rule that is evaluated when a record is created, and every time it&#39;s edited.However, as the image below shows, you cannot add time-dependent workflow actions with this option." />
+<link rel="canonical" href="http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-03-12T00:00:00+01:00" />
+<link rel="next" href="http://smukov.github.io/blog/2016/03/13/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/" title="Time-Dependent Workflow that triggers in less than 1 hour" />
+<link rel="prev" href="http://smukov.github.io/blog/2016/03/11/about-me/" title="About me and this blog" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Run Time-Dependent Workflow on every record edit",
+    "datePublished": "2016-03-12T00:00:00+01:00",
+    "description": "If you ever wanted to create a Time-Dependent workflow rule that will be triggered every time a record is edited,your first instinct was probably to create a rule that is evaluated when a record is created, and every time it&#39;s edited.However, as the image below shows, you cannot add time-dependent workflow actions with this option.",
+    "url": "http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Run Time-Dependent Workflow on every record edit</h1>
+
+  <div class="entry">
+    <p>If you ever wanted to create a Time-Dependent workflow rule that will be triggered <em>every</em> time a record is edited,
+your first instinct was probably to create a rule that is evaluated when a record is <code class="highlighter-rouge">created, and every time it's edited</code>.
+However, as the image below shows, <code class="highlighter-rouge">you cannot add time-dependent workflow actions with this option</code>.</p>
+
+<p><a href="/images/3-2016/evaluate_rule_message.png" target="_blank"><img src="/images/3-2016/evaluate_rule_message.png" alt="evaulate_rule_message" /></a></p>
+
+<h3 id="how-to-overcome-this-limitation">How to overcome this limitation</h3>
+
+<p>Let’s say you want to create a <code class="highlighter-rouge">Workflow Rule</code> that will notify an agent if an Opportunity hasn’t been updated
+for 7 days.</p>
+
+<p>To do this, start by creating a rule on Opportunity object. Specify the <code class="highlighter-rouge">Rule Name</code> and select the <code class="highlighter-rouge">Evaluation Criteria</code> to
+evaluate the rule when a record is <code class="highlighter-rouge">created, and any time it's edited to subsequently meet criteria</code>.</p>
+
+<p>Next, for <code class="highlighter-rouge">Rule Criteria</code> select <code class="highlighter-rouge">Opportunity: Created Date</code> <code class="highlighter-rouge">not equal to</code> <code class="highlighter-rouge">BLANK</code>, as in the image below. By setting this criteria you are making
+sure that the workflow rule will be triggered every time since <code class="highlighter-rouge">Created Date</code> field will never be <code class="highlighter-rouge">blank</code>.</p>
+
+<p><a href="/images/3-2016/workflow.png" target="_blank"><img src="/images/3-2016/workflow.png" alt="workflow_definition" /></a></p>
+
+<p>Finally, specify a <code class="highlighter-rouge">Time-Dependent Workflow Action</code> that is triggered 7 days after <code class="highlighter-rouge">Opportunity: Last Modified Date</code> and create a <code class="highlighter-rouge">Task</code> for the created action that will notify a specified user. Once you active your rule its <code class="highlighter-rouge">Workflow Actions</code> section should look similar to the image below.</p>
+
+<p><a href="/images/3-2016/workflow-actions.png" target="_blank"><img src="/images/3-2016/workflow-actions.png" alt="workflow_actions" /></a></p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Now you have a <code class="highlighter-rouge">Time-Dependent Workflow</code> that will create a <code class="highlighter-rouge">Time-Dependent Action</code> every time you create or edit an Opportunity record.</p>
+
+<p>That’s it for my first ever blog post. If you have any suggestions or questions feel free to comment below.</p>
+
+  </div>
+
+  <div class="date">
+    Written on March 12, 2016
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/&title=Run Time-Dependent Workflow on every record edit&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Run Time-Dependent Workflow on every record edit&url=http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2016/03/12/Time-Dependent-Workflow-On-Edit/',
+		  'title': 'Run Time-Dependent Workflow on every record edit'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>

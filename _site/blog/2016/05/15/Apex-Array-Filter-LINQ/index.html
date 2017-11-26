@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Array Filter – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the for loop.
+
+" />
+    <meta property="og:description" content="Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the for loop.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Array Filter" />
+    <meta property="twitter:title" content="Array Filter" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Array Filter - Smukov on Salesforce</title>
+<meta property="og:title" content="Array Filter" />
+<meta name="description" content="Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the for loop." />
+<meta property="og:description" content="Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the for loop." />
+<link rel="canonical" href="http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-05-15T00:00:00+02:00" />
+<link rel="next" href="http://smukov.github.io/blog/2016/05/15/Apex-Command-Button-Return-Value/" title="apex:commandButton with Return Value" />
+<link rel="prev" href="http://smukov.github.io/blog/2016/03/13/Time-Dependent-Workflow-That-Triggers-In-Less-Than-Hour/" title="Time-Dependent Workflow that triggers in less than 1 hour" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Array Filter",
+    "datePublished": "2016-05-15T00:00:00+02:00",
+    "description": "Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the for loop.",
+    "url": "http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Array Filter</h1>
+
+  <div class="entry">
+    <p>Recently I needed a way to quickly filter out an array (i.e. list) of sObjects in Apex. Since I was a C# developer for 5 years, I immediately remembered how I used LINQ in C# for this purpose and I hoped there’s something similar in Apex as well. However, in Apex, there is no easy way to filter through a list without using the <code class="highlighter-rouge">for</code> loop.</p>
+
+<p>I’m usually trying to limit the number of DML statements in Apex, so I’d often query more records at once (if I know I’m not going to reach 50.000 records limit) and then filter through it via <code class="highlighter-rouge">for</code> loop in case I need to get multiple sets of records from that query. Because of this need, I decided to create a helper class that will help me achieve this without writing the <code class="highlighter-rouge">for</code> loop every time I need to filter something. I’m sharing the class with you below, and you can share your thoughts with me in the comments.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ArrayFilter</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">sObject</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">sObject</span><span class="o">&gt;</span> <span class="n">arrayToFilter</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">&gt;</span> <span class="n">filters</span><span class="o">,</span> <span class="n">String</span> <span class="n">filterLogic</span><span class="o">){</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">sObject</span><span class="o">&gt;</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">sObject</span><span class="o">&gt;();</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">arrayToFilter</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+      <span class="k">return</span> <span class="n">retVal</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">filterLogic</span> <span class="o">==</span> <span class="err">'</span><span class="n">OR</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">for</span><span class="o">(</span><span class="n">Integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">arrayToFilter</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++){</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">Integer</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">filters</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">j</span><span class="o">++){</span>
+          <span class="n">Filter</span> <span class="n">f</span> <span class="o">=</span> <span class="n">filters</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+          <span class="k">if</span><span class="o">(</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Assert</span><span class="o">(</span><span class="n">arrayToFilter</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">f</span><span class="o">)){</span>
+            <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">arrayToFilter</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+            <span class="k">continue</span><span class="o">;</span>
+          <span class="o">}</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">filterLogic</span> <span class="o">==</span> <span class="err">'</span><span class="n">AND</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">for</span><span class="o">(</span><span class="n">Integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">arrayToFilter</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++){</span>
+        <span class="n">Boolean</span> <span class="n">passedTheFilter</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">Integer</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">filters</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">j</span><span class="o">++){</span>
+          <span class="n">Filter</span> <span class="n">f</span> <span class="o">=</span> <span class="n">filters</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+          <span class="k">if</span><span class="o">(</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Assert</span><span class="o">(</span><span class="n">arrayToFilter</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">f</span><span class="o">)</span> <span class="o">==</span> <span class="kc">false</span><span class="o">){</span>
+            <span class="n">passedTheFilter</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">break</span><span class="o">;</span>
+          <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">passedTheFilter</span><span class="o">){</span>
+          <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">arrayToFilter</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="n">ArrayFilterException</span><span class="o">(</span><span class="err">'</span><span class="n">Invalid</span> <span class="n">filter</span> <span class="n">logic</span> <span class="s">"' + filterLogic + '"</span> <span class="n">in</span> <span class="kd">class</span> <span class="nc">ArrayFilter</span><span class="o">.</span> <span class="err">\</span><span class="n">n</span><span class="err">\</span><span class="n">nAvailable</span> <span class="n">options</span> <span class="n">are</span> <span class="s">"OR"</span> <span class="n">and</span> <span class="s">"AND"</span><span class="err">'</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">retVal</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Boolean</span> <span class="n">Assert</span><span class="o">(</span><span class="n">sObject</span> <span class="n">o</span><span class="o">,</span> <span class="n">Filter</span> <span class="n">f</span><span class="o">){</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Boolean</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Boolean</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valBoolean</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Boolean</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valBoolean</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Date</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Date</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valDate</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Date</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDate</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Date</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDate</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Date</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valDate</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">DateTime</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">DateTime</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valDateTime</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">DateTime</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDateTime</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">DateTime</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDateTime</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">DateTime</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valDateTime</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Time</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Time</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valTime</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Time</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valTime</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Time</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valTime</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Time</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valTime</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Integer</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valInteger</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valInteger</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valInteger</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valInteger</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Decimal</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Decimal</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valDecimal</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Decimal</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDecimal</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Decimal</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDecimal</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Decimal</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valDecimal</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Double</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Double</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valDouble</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Double</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDouble</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Double</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valDouble</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Double</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valDouble</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Long</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Long</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valLong</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&gt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Long</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valLong</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="sc">'&lt;'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Long</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">&lt;</span> <span class="n">f</span><span class="o">.</span><span class="na">valLong</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Long</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valLong</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">Id</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Id</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="na">valId</span><span class="o">;</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">Id</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">))</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="na">valId</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valueType</span> <span class="o">==</span> <span class="err">'</span><span class="n">String</span><span class="err">'</span><span class="o">){</span>
+      <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="o">!=</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">!((</span><span class="n">String</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">)).</span><span class="na">equals</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valString</span><span class="o">);</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="n">CONTAINS</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">String</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">)).</span><span class="na">contains</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valString</span><span class="o">);</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="n">STARTS</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">String</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">)).</span><span class="na">startsWith</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valString</span><span class="o">);</span>
+      <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">operator</span> <span class="o">==</span> <span class="err">'</span><span class="n">ENDS</span><span class="err">'</span><span class="o">){</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">String</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">)).</span><span class="na">endsWith</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valString</span><span class="o">);</span>
+      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+        <span class="k">return</span> <span class="o">((</span><span class="n">String</span><span class="o">)</span><span class="n">o</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">fieldName</span><span class="o">)).</span><span class="na">equals</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">valString</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Filter</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">fieldName</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">valueType</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">operator</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span><span class="c1">//&gt;,&lt;,=,!=, CONTAINS, STARTS, ENDS</span>
+
+    <span class="kd">public</span> <span class="n">Boolean</span> <span class="n">valBoolean</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Date</span> <span class="n">valDate</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">DateTime</span> <span class="n">valDateTime</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Time</span> <span class="n">valTime</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Integer</span> <span class="n">valInteger</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Decimal</span> <span class="n">valDecimal</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Double</span> <span class="n">valDouble</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Long</span> <span class="n">valLong</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">Id</span> <span class="n">valId</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">valString</span> <span class="o">{</span><span class="n">get</span><span class="o">;</span> <span class="kd">private</span> <span class="n">set</span><span class="o">;}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Boolean</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Boolean</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valBoolean</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Date</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Date</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valDate</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">DateTime</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">DateTime</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valDateTime</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Time</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Time</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valTime</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Integer</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valInteger</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Decimal</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Decimal</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valDecimal</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Double</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Double</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valDouble</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Long</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Long</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valLong</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Id</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Id</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valId</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Filter</span><span class="o">(</span><span class="n">String</span> <span class="n">fieldName</span><span class="o">,</span> <span class="n">String</span> <span class="n">operator</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">){</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">fieldName</span> <span class="o">=</span> <span class="n">fieldName</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valueType</span> <span class="o">=</span> <span class="err">'</span><span class="n">String</span><span class="err">'</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">valString</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h2 id="sample-usage">Sample usage</h2>
+
+<p>Below you can see some of the ways you could use this <code class="highlighter-rouge">ArrayFilter</code> class to filter a list of objects.</p>
+
+<p>Example #1:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//filter by String</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">sObject</span><span class="o">&gt;</span> <span class="n">filteredArray</span> <span class="o">=</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">someArrayToFilter</span><span class="o">,</span> <span class="k">new</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">[]{</span><span class="k">new</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">(</span><span class="err">'</span><span class="n">Name</span><span class="err">'</span><span class="o">,</span> <span class="sc">'='</span><span class="o">,</span> <span class="err">'</span><span class="n">John</span> <span class="n">Doe</span><span class="err">'</span><span class="o">)},</span> <span class="err">'</span><span class="n">OR</span><span class="err">'</span><span class="o">);</span></code></pre></figure>
+
+<p>Example #2:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">&gt;</span> <span class="n">filters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">&gt;();</span>
+<span class="n">filters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">(</span><span class="err">'</span><span class="n">Migration_Start_Date__c</span><span class="err">'</span><span class="o">,</span> <span class="sc">'='</span><span class="o">,</span> <span class="n">Date</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="mi">2000</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">)));</span>
+<span class="n">filters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">(</span><span class="err">'</span><span class="n">Migration_Start_Date__c</span><span class="err">'</span><span class="o">,</span> <span class="sc">'&gt;'</span><span class="o">,</span> <span class="n">Date</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="mi">2010</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">)));</span>
+
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">filtered</span> <span class="o">=</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">someArrayToFilter</span><span class="o">,</span><span class="n">filters</span><span class="o">,</span> <span class="err">'</span><span class="n">OR</span><span class="err">'</span><span class="o">);</span></code></pre></figure>
+
+<p>Example #3:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//text supports operators: =, !=, CONTAINS, ENDS, STARTS</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">&gt;</span> <span class="n">filters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">&gt;();</span>
+<span class="n">filters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">(</span><span class="err">'</span><span class="n">Phone</span><span class="err">'</span><span class="o">,</span> <span class="err">'</span><span class="n">STARTS</span><span class="err">'</span><span class="o">,</span>  <span class="err">'</span><span class="mi">0355</span><span class="err">'</span><span class="o">));</span>
+<span class="n">filters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">Filter</span><span class="o">(</span><span class="err">'</span><span class="n">NAME</span><span class="err">'</span><span class="o">,</span> <span class="err">'</span><span class="n">STARTS</span><span class="err">'</span><span class="o">,</span>  <span class="err">'</span><span class="n">Jo</span><span class="err">'</span><span class="o">));</span>
+
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">filtered</span> <span class="o">=</span> <span class="n">ArrayFilter</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">someArrayToFilter</span><span class="o">,</span><span class="n">filters</span><span class="o">,</span> <span class="err">'</span><span class="n">AND</span><span class="err">'</span><span class="o">);</span></code></pre></figure>
+
+
+  </div>
+
+  <div class="date">
+    Written on May 15, 2016
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/&title=Array Filter&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Array Filter&url=http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2016/05/15/Apex-Array-Filter-LINQ/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2016/05/15/Apex-Array-Filter-LINQ/',
+		  'title': 'Array Filter'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>

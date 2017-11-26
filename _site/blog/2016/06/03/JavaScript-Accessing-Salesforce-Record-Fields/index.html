@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Accessing Salesforce Record Fields with JavaScript – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:
+
+" />
+    <meta property="og:description" content="I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Accessing Salesforce Record Fields with JavaScript" />
+    <meta property="twitter:title" content="Accessing Salesforce Record Fields with JavaScript" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Accessing Salesforce Record Fields with JavaScript - Smukov on Salesforce</title>
+<meta property="og:title" content="Accessing Salesforce Record Fields with JavaScript" />
+<meta name="description" content="I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:" />
+<meta property="og:description" content="I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:" />
+<link rel="canonical" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-06-03T00:00:00+02:00" />
+<link rel="next" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" title="Sorting Salesforce Records with JavaScript" />
+<link rel="prev" href="http://smukov.github.io/blog/2016/05/15/Visualforce-Page-to-Include-Header-and-Sidebar/" title="Make a Managed Visualforce Page show Header and Sidebar" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Accessing Salesforce Record Fields with JavaScript",
+    "datePublished": "2016-06-03T00:00:00+02:00",
+    "description": "I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:",
+    "url": "http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Accessing Salesforce Record Fields with JavaScript</h1>
+
+  <div class="entry">
+    <p>I wanted to share with you a utility function that I’ve created and stored in my <code class="highlighter-rouge">Static Resources</code>. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by <code class="highlighter-rouge">sforce.connection.query</code> or <code class="highlighter-rouge">Remote Action</code>. Here’s the function below:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+ * Get the sub records field value if the API contains dots
+ * @param  {[Object]} record [Record containing the field]
+ * @param  {[String]} api    [Property path (e.g. - Order_Line__r.Order_Line_Premise__r.Id)]
+ * @return {[Field_Value]}   [Null - if part of the path is not defined, otherwise it will return the value of the field]
+ */</span>
+<span class="kd">var</span> <span class="nx">getRecordField</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">api</span><span class="p">){</span>
+   <span class="kd">var</span> <span class="nx">subRecords</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">);</span>
+   <span class="kd">var</span> <span class="nx">topLevelObj</span> <span class="o">=</span> <span class="nx">record</span><span class="p">;</span>
+   <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">subRecords</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+       <span class="k">if</span><span class="p">(</span><span class="nx">topLevelObj</span> <span class="o">==</span> <span class="kc">null</span><span class="p">){</span>
+           <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+       <span class="p">}</span>
+       <span class="nx">topLevelObj</span> <span class="o">=</span> <span class="nx">topLevelObj</span><span class="p">[</span><span class="nx">subRecords</span><span class="p">[</span><span class="nx">i</span><span class="p">]];</span>
+   <span class="p">}</span>
+
+   <span class="k">if</span><span class="p">(</span><span class="nx">topLevelObj</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">topLevelObj</span><span class="p">[</span><span class="nx">subRecords</span><span class="p">[</span><span class="nx">subRecords</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">==</span> <span class="kc">null</span><span class="p">){</span>
+       <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+   <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+       <span class="k">return</span> <span class="nx">topLevelObj</span><span class="p">[</span><span class="nx">subRecords</span><span class="p">[</span><span class="nx">subRecords</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">]];</span>
+   <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Sample use:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'something'</span><span class="p">,</span>
+  <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="na">nested_property</span> <span class="p">:</span> <span class="s1">'nested'</span><span class="p">,</span>
+    <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'z'</span><span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">//get first level property</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="s1">'one_property'</span><span class="p">));</span>
+
+<span class="c1">//get property of a nested object</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="s1">'another_property.nested_property'</span><span class="p">));</span>
+
+<span class="c1">//you can even access an array objects</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="s1">'another_property.nested_array.1.x'</span><span class="p">));</span></code></pre></figure>
+
+<p>I’ve found this method to be incredibly useful when I have to work with hierarchy of objects returned from Salesforce (e.g. - <code class="highlighter-rouge">record.Order_Line__r.Primary_Site__r.Street_Addess__c</code>). I hope that you’ll find this useful as well.</p>
+
+  </div>
+
+  <div class="date">
+    Written on June  3, 2016
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/&title=Accessing Salesforce Record Fields with JavaScript&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Accessing Salesforce Record Fields with JavaScript&url=http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/',
+		  'title': 'Accessing Salesforce Record Fields with JavaScript'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
