@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lightning Pills Input Component – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:
+
+
+
+The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it.
+
+" />
+    <meta property="og:description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:
+
+
+
+The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Lightning Pills Input Component" />
+    <meta property="twitter:title" content="Lightning Pills Input Component" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Lightning Pills Input Component - Smukov on Salesforce</title>
+<meta property="og:title" content="Lightning Pills Input Component" />
+<meta name="description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it." />
+<meta property="og:description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it." />
+<link rel="canonical" href="http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-11-26T00:00:00+01:00" />
+<link rel="next" href="http://smukov.github.io/blog/2017/11/26/Lightning-Toast-Component/" title="Lightning Toast Component" />
+<link rel="prev" href="http://smukov.github.io/blog/2016/07/30/Insert-Hierarchy-of-Records/" title="Insert a Hierarchy of Records" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Lightning Pills Input Component",
+    "datePublished": "2017-11-26T00:00:00+01:00",
+    "description": "In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it.",
+    "url": "http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Lightning Pills Input Component</h1>
+
+  <div class="entry">
+    <p>In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce <code class="highlighter-rouge">lightning:pill</code> components to display the results. You can see a sample of this component in the image below:</p>
+
+<p><a href="/images/11-2017/26/pillsInput.png" target="_blank"><img src="/images/11-2017/26/pillsInput.png" alt="pills_input" /></a></p>
+
+<p>The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it.</p>
+
+<!--more-->
+
+<h2 id="getting-started">Getting started</h2>
+
+<p>First of all, the implementation will use some utility code for generating random GUID and validating the input pattern with regular expressions. This code is stored as a <code class="highlighter-rouge">static resource</code> and you’ll need to upload it to your org for this implementation to work. You can find this static resource <a href="/download/11-2017/26/LEX.zip">here</a>.</p>
+
+<p>We’ll call this custom component <code class="highlighter-rouge">pillsInput</code>, so go ahead and create it and set the following code in their respective component files:</p>
+
+<h2 id="pillsinputcmp">pillsInput.cmp</h2>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;aura:component</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;ltng:require</span> <span class="na">scripts=</span><span class="s">"{!join(',', $Resource.LEX + '/ms.js', $Resource.LEX + '/ms-regex.js')}"</span> <span class="na">afterScriptsLoaded=</span><span class="s">"{!c.scriptsLoaded}"</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"label"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">required=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"placeholderText"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"name"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">required=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"value"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">required=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"delimiter"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">default=</span><span class="s">" "</span>
+        <span class="na">description=</span><span class="s">"Character used to split the input"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"delimiterInDatabase"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">default=</span><span class="s">";"</span>
+        <span class="na">description=</span><span class="s">"Character used to split the input for database storage"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"validationTypes"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">default=</span><span class="s">""</span>
+        <span class="na">description=</span><span class="s">"Possible values (for multiple add them as comma separated): emailAddress, ipAddress, weburl, positiveDecimalNumberWithTwoDecimals, positiveInteger, nonEmptyString"</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"pills"</span> <span class="na">type=</span><span class="s">"List"</span> <span class="na">default=</span><span class="s">"[]"</span> <span class="na">access=</span><span class="s">"private"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"scriptsLoaded"</span> <span class="na">type=</span><span class="s">"Boolean"</span> <span class="na">default=</span><span class="s">"false"</span> <span class="na">access=</span><span class="s">"private"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"valueDataLoaded"</span> <span class="na">type=</span><span class="s">"Boolean"</span> <span class="na">default=</span><span class="s">"false"</span> <span class="na">access=</span><span class="s">"private"</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;aura:handler</span> <span class="na">name=</span><span class="s">"init"</span> <span class="na">value=</span><span class="s">"{! this }"</span> <span class="na">action=</span><span class="s">"{! c.init }"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:handler</span> <span class="na">name=</span><span class="s">"change"</span> <span class="na">value=</span><span class="s">"{!v.pills}"</span> <span class="na">action=</span><span class="s">"{!c.handlePillsChanged}"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;aura:handler</span> <span class="na">name=</span><span class="s">"change"</span> <span class="na">value=</span><span class="s">"{!v.value}"</span> <span class="na">action=</span><span class="s">"{!c.handleValueChanged}"</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"slds-form-element"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;label</span> <span class="na">class=</span><span class="s">"slds-form-element__label"</span> <span class="na">for=</span><span class="s">"{!v.name}"</span><span class="nt">&gt;</span>{!v.label}<span class="nt">&lt;/label&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"slds-form-element__control"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;input</span> <span class="na">aura:id=</span><span class="s">"inputText"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">id=</span><span class="s">"{!v.name}"</span> <span class="na">class=</span><span class="s">"slds-input"</span> <span class="na">placeholder=</span><span class="s">"{!v.placeholderText}"</span> <span class="na">value=</span><span class="s">""</span> <span class="na">onkeyup=</span><span class="s">"{!c.onKeyUpInput}"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"{!'listbox-selections-' + v.name}"</span> <span class="na">role=</span><span class="s">"listbox"</span> <span class="na">aria-orientation=</span><span class="s">"horizontal"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"slds-listbox slds-listbox_inline slds-p-top_xxx-small"</span> <span class="na">role=</span><span class="s">"group"</span> <span class="na">aria-label=</span><span class="s">"Inputted Options:"</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;aura:iteration</span> <span class="na">items=</span><span class="s">"{!v.pills}"</span> <span class="na">var=</span><span class="s">"pill"</span><span class="nt">&gt;</span>
+                        <span class="nt">&lt;li</span> <span class="na">role=</span><span class="s">"presentation"</span> <span class="na">class=</span><span class="s">"slds-listbox__item"</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;lightning:pill</span> <span class="na">name=</span><span class="s">"{!pill.id}"</span> <span class="na">label=</span><span class="s">"{!pill.label}"</span>
+                                <span class="na">hasError=</span><span class="s">"{!!pill.isValid}"</span> <span class="na">onremove=</span><span class="s">"{!c.onRemovePill}"</span><span class="nt">/&gt;</span>
+                        <span class="nt">&lt;/li&gt;</span>
+                    <span class="nt">&lt;/aura:iteration&gt;</span>
+                <span class="nt">&lt;/ul&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;/aura:component&gt;</span></code></pre></figure>
+
+<p>Let’s get over the attributes. The <code class="highlighter-rouge">label</code>, <code class="highlighter-rouge">placeholderText</code>, <code class="highlighter-rouge">name</code>, and <code class="highlighter-rouge">value</code> attributes are pretty much standard attributes for any Salesforce Lightning component used for data input. The more interesting attributes are the following bunch:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">delimiter</code> - this is a character that is going to be used to split the inputted string into pills. This approach, for example, enables the user to copy/paste a long list of IP Addresses separated by space (or by any other specified delimiter value), which would then be separated into individual pills.</li>
+  <li><code class="highlighter-rouge">delimiterInDatabase</code> - this is a character used to split the pills when they are stored in a text field in database. Consider this as a semi-colon separator used to split the multi-picklist values.</li>
+  <li><code class="highlighter-rouge">validationTypes</code> - here we can specify what type of pattern the input needs to be in. If the pattern isn’t matched, the pills are shown in red.</li>
+</ul>
+
+<p>We have a couple of more <code class="highlighter-rouge">private</code> attributes in the component but their function is trivial and self explanatory. Let’s move to the <code class="highlighter-rouge">controller</code> part.</p>
+
+<h2 id="pillsinputcontrollerjs">pillsInputController.js</h2>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">({</span>
+  <span class="na">scriptsLoaded</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">helper</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
+  <span class="p">},</span>
+
+  <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">helper</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
+  <span class="p">},</span>
+
+  <span class="na">onKeyUpInput</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">delimiter</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiter'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">inputText</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">'inputText'</span><span class="p">).</span><span class="nx">getElement</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">currentInput</span> <span class="o">=</span> <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">currentInput</span><span class="p">[</span><span class="nx">currentInput</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">delimiter</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">helper</span><span class="p">.</span><span class="nx">addNewPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">currentInput</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">delimiter</span><span class="p">));</span>
+      <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="na">handlePillsChanged</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">helper</span><span class="p">.</span><span class="nx">parsePillsToField</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
+  <span class="p">},</span>
+
+  <span class="na">handleValueChanged</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.valueDataLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">)</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.valueDataLoaded'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+      <span class="nx">helper</span><span class="p">.</span><span class="nx">parseFieldToPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="na">onRemovePill</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">pillId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">getSource</span><span class="p">().</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.name'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pills</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">pillId</span> <span class="o">===</span> <span class="nx">pills</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pills</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">})</span></code></pre></figure>
+
+<p>The controller is handling various events that occur within the component. The most important handler is the <code class="highlighter-rouge">onKeyUpInput</code> one. This handler will evaluate if the latest key captured by the <code class="highlighter-rouge">pillsInput</code> component is a specified <code class="highlighter-rouge">delimiter</code> or an <code class="highlighter-rouge">enter</code> key. If one of those is true, then the inputted text will be added as a pill, and the input element will be cleared.</p>
+
+<p><code class="highlighter-rouge">handleValueChanged</code> function is there to parse the initially binded <code class="highlighter-rouge">value</code> attribute (e.g. - binded with a sObject field) into pills. After that initial action we need to set the <code class="highlighter-rouge">valueDataLoaded</code> flag in order to avoid calling this code when we add new pills. Now let’s see what is in the component’s helper.</p>
+
+<h2 id="pillsinputhelperjs">pillsInputHelper.js</h2>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">({</span>
+  <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">helper</span><span class="p">.</span><span class="nx">parseFieldToPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="na">addNewPills</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">values</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">trimmedVal</span> <span class="o">=</span> <span class="nx">values</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">trim</span><span class="p">();</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">trimmedVal</span> <span class="o">!==</span> <span class="s2">""</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pills</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+          <span class="na">id</span><span class="p">:</span> <span class="nx">lexUtil</span><span class="p">.</span><span class="nx">guidGenerator</span><span class="p">(),</span>
+          <span class="na">label</span><span class="p">:</span> <span class="nx">trimmedVal</span><span class="p">,</span>
+          <span class="na">isValid</span><span class="p">:</span> <span class="nx">helper</span><span class="p">.</span><span class="nx">isInputValid</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">trimmedVal</span><span class="p">)</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
+  <span class="p">},</span>
+
+  <span class="na">isInputValid</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">regexUtil</span><span class="p">.</span><span class="nx">validateInput</span><span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.validationTypes'</span><span class="p">),</span> <span class="nx">value</span><span class="p">);</span>
+  <span class="p">},</span>
+
+  <span class="na">parsePillsToField</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">delimiterInDatabase</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiterInDatabase'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">fieldStr</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pills</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">//NOTE: I think that it's smarter to allow saving to database, but it's debatable. It could be abstracted to component's attribute.</span>
+      <span class="c1">//if(pills[i].isValid)</span>
+      <span class="nx">fieldStr</span> <span class="o">+=</span> <span class="nx">pills</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">label</span> <span class="o">+</span> <span class="nx">delimiterInDatabase</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">,</span> <span class="nx">fieldStr</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">//ignore issue that occurs when trying to set unbinded value</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="na">parseFieldToPills</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">fieldStr</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">delimiterInDatabase</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiterInDatabase'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">var</span> <span class="nx">splitFieldStr</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">fieldStr</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">splitFieldStr</span> <span class="o">=</span> <span class="nx">fieldStr</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">delimiterInDatabase</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">splitFieldStr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">splitFieldStr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">""</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pills</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+          <span class="na">id</span><span class="p">:</span> <span class="nx">lexUtil</span><span class="p">.</span><span class="nx">guidGenerator</span><span class="p">(),</span>
+          <span class="na">label</span><span class="p">:</span> <span class="nx">splitFieldStr</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span>
+          <span class="na">isValid</span><span class="p">:</span> <span class="nx">helper</span><span class="p">.</span><span class="nx">isInputValid</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">splitFieldStr</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">})</span></code></pre></figure>
+
+<p>Inside the helper the functions <code class="highlighter-rouge">parseFieldToPills</code> and <code class="highlighter-rouge">parsePillsToField</code> are parsing the binded field’s inital value into pills, and then parsing those pills into a string that can be safely stored into database.</p>
+
+<p><code class="highlighter-rouge">isInputValid</code> function is using the <code class="highlighter-rouge">regexUtil</code> object to validate the input. This object is stored in the static resources that are provided at the beginning of this blog post.</p>
+
+<p>Finally, the <code class="highlighter-rouge">addNewPills</code> function is used to convert the list of strings to pills. This function also utilizes an object from the static resources called <code class="highlighter-rouge">lexUtil</code>, which has a function to generate a unique GUID. The reason why I haven’t used a <code class="highlighter-rouge">label</code> to identify individual pills is because I wanted to keep the option for users to input pills with same values.</p>
+
+<h2 id="how-to-use-it">How to use it?</h2>
+
+<p>Using the component is rather easy - just paste the below code snippet to your Lightning Component, bind the <code class="highlighter-rouge">value</code> attribute to your appropriate object (or leave it blank “” for a quick test), and you are ready to go.</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;c:PillsInput</span> <span class="na">label=</span><span class="s">"IP Addresses"</span> <span class="na">name=</span><span class="s">"ipAddresses"</span>
+    <span class="na">placeholderText=</span><span class="s">"Input IP Addresses separated by space"</span>
+    <span class="na">validationTypes=</span><span class="s">"ipAddress"</span> <span class="na">value=</span><span class="s">"{!v.someObject.someField__c}"</span> <span class="nt">/&gt;</span></code></pre></figure>
+
+<p>The end result should look something like this:</p>
+
+<p><a href="/images/11-2017/26/pillsInput.png" target="_blank"><img src="/images/11-2017/26/pillsInput.png" alt="pills_input" /></a></p>
+
+<h2 id="possible-improvements">Possible improvements</h2>
+
+<p>There are a couple of possible improvements &amp; optimizations that I can think of right now. The one would be to add a <code class="highlighter-rouge">class</code> attribute to provide additional styling to the component. The validation logic could also be improved to optionally prevent users from saving the input if there are invalid pills.</p>
+
+<p>That’s it. I hope that somebody will find this component useful, and, as always, feel free to leave your comments below.</p>
+
+  </div>
+
+  <div class="date">
+    Written on November 26, 2017
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/&title=Lightning Pills Input Component&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Lightning Pills Input Component&url=http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2017/11/26/Lightning-Pills-Input/',
+		  'title': 'Lightning Pills Input Component'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
