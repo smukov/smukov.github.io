@@ -38,3 +38,5 @@ Thank you and I hope you'll find something useful and/or interesting for yoursel
 ### Contact me
 
 via [LinkedIn](https://www.linkedin.com/in/smukov), [Email](mailto:smukov@gmail.com) or [Twitter](https://www.twitter.com/MiroslavSmukov).
+
+<img src="http://salesforce.stackexchange.com/users/flair/25509.png" width="208" height="58" alt="profile for smukov at Salesforce Stack Exchange, Q&amp;A for Salesforce administrators, implementation experts, developers and anybody in-between" title="profile for smukov at Salesforce Stack Exchange, Q&amp;A for Salesforce administrators, implementation experts, developers and anybody in-between"/>
