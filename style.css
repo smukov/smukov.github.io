@@ -438,7 +438,7 @@ footer {
 }
 
 .highlight {
-  background-color: black;
+  background-color: #FFF;
   padding: 7px 7px 7px 10px;
   border: 1px solid #ddd;
   -moz-box-shadow: 3px 3px rgba(0, 0, 0, 0.1);
@@ -458,12 +458,12 @@ code {
 
 /* Comment */
 .highlight .err {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Error */
 .highlight .g {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Generic */
@@ -473,12 +473,12 @@ code {
 
 /* Keyword */
 .highlight .l {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Literal */
 .highlight .n {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Name */
@@ -493,7 +493,7 @@ code {
 
 /* Other */
 .highlight .p {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Punctuation */
@@ -565,7 +565,7 @@ code {
 
 /* Generic.Subheading */
 .highlight .gt {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Generic.Traceback */
@@ -615,7 +615,7 @@ code {
 
 /* Literal.String */
 .highlight .na {
-  color: #93A1A1;
+  color: #cb1bff;
 }
 
 /* Name.Attribute */
@@ -655,22 +655,22 @@ code {
 
 /* Name.Function */
 .highlight .nl {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Name.Label */
 .highlight .nn {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Name.Namespace */
 .highlight .nx {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Name.Other */
 .highlight .py {
-  color: #93A1A1;
+  color: #165b5b;
 }
 
 /* Name.Property */
