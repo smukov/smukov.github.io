@@ -458,12 +458,12 @@ code {
 
 /* Comment */
 .highlight .err {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Error */
 .highlight .g {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Generic */
@@ -473,12 +473,12 @@ code {
 
 /* Keyword */
 .highlight .l {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Literal */
 .highlight .n {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Name */
@@ -493,7 +493,7 @@ code {
 
 /* Other */
 .highlight .p {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Punctuation */
@@ -565,7 +565,7 @@ code {
 
 /* Generic.Subheading */
 .highlight .gt {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Generic.Traceback */
@@ -655,22 +655,22 @@ code {
 
 /* Name.Function */
 .highlight .nl {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Name.Label */
 .highlight .nn {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Name.Namespace */
 .highlight .nx {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Name.Other */
 .highlight .py {
-  color: #165b5b;
+  color: #000000;
 }
 
 /* Name.Property */
