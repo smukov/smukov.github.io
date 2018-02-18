@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lightning Help Text Component – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="The standard lightning:helptext component has a strange limitation where it doesn’t work with Lightning Out. That’s why I decided to create a quick and dirty custom component to replace it:
+
+
+
+" />
+    <meta property="og:description" content="The standard lightning:helptext component has a strange limitation where it doesn’t work with Lightning Out. That’s why I decided to create a quick and dirty custom component to replace it:
+
+
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Lightning Help Text Component" />
+    <meta property="twitter:title" content="Lightning Help Text Component" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Lightning Help Text Component - Smukov on Salesforce</title>
+<meta property="og:title" content="Lightning Help Text Component" />
+<meta name="description" content="The standard lightning:helptext component has a strange limitation where it doesn’t work with Lightning Out. That’s why I decided to create a quick and dirty custom component to replace it:" />
+<meta property="og:description" content="The standard lightning:helptext component has a strange limitation where it doesn’t work with Lightning Out. That’s why I decided to create a quick and dirty custom component to replace it:" />
+<link rel="canonical" href="http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-02-18T00:00:00+01:00" />
+<link rel="prev" href="http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" title="Lightning Pills Input Component" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Lightning Help Text Component",
+    "datePublished": "2018-02-18T00:00:00+01:00",
+    "description": "The standard lightning:helptext component has a strange limitation where it doesn’t work with Lightning Out. That’s why I decided to create a quick and dirty custom component to replace it:",
+    "url": "http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Lightning Help Text Component</h1>
+
+  <div class="entry">
+    <p>The standard <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/aura_compref_lightning_helptext.htm">lightning:helptext</a> component has a strange limitation where it doesn’t work with <strong>Lightning Out</strong>. That’s why I decided to create a quick and dirty custom component to replace it:</p>
+
+<p><a href="/images/2018/2/18/helpText.png" target="_blank"><img src="/images/2018/2/18/helpText.png" alt="help_text" /></a></p>
+
+<!--more-->
+
+<h2 id="why-create-a-custom-component">Why create a custom component?</h2>
+
+<p>A lot of companies are still working in Salesforce Classic, but are slowly transitioning to new Lightning Experience due to all the extra benefits that come with it. During this transition perioud a lot of them will utilize <strong>Lightning Out</strong> to render Lightning Components inside a Visualforce Pages. I was working for one such company.</p>
+
+<p>The requirement was to build a new form that was supposed to be available both internally and also exposed in Communities, and I was going to build this using Lightning Components hosted in Visualforce Page. The first surprise I got was that <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/aura_compref_lightning_input.htm">lightning:input</a>, at least for now, doesn’t support any Help Text attribute. That made me create a custom input component (more on that some other day) that utilized the <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/aura_compref_lightning_helptext.htm">lightning:helptext</a> component for the Help Text part. Then came my second surprise - this component doesn’t function properly in <strong>Lightning Out</strong>.</p>
+
+<p>I asked a <a href="https://salesforce.stackexchange.com/questions/200334/lightninghelptext-not-working-in-lightning-out">question</a> about this issue on StackExchange, but got no answer. The client really needed this feature in his form, so I had no other choice but to create a custom component.</p>
+
+<h2 id="getting-started-with-code">Getting started with code</h2>
+
+<p>Go ahead and create a new custom Lightning component named <code class="highlighter-rouge">customHelpText</code>. The code is pretty simple and I don’t think it requires much explanations - apart from CSS, that part gave me headaches and I’m still not sure how it works! Use the code below to build your new component:</p>
+
+<h2 id="customhelptextcmp">customHelpText.cmp</h2>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;aura:component</span> <span class="nt">&gt;</span>
+	<span class="nt">&lt;aura:attribute</span> <span class="na">name=</span><span class="s">"text"</span> <span class="na">type=</span><span class="s">"String"</span> <span class="na">required=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"slds-form-element__icon"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"javascript:void(0);"</span> <span class="na">class=</span><span class="s">"slds-form-element__icon slds-align-middle"</span>
+			<span class="na">onclick=</span><span class="s">"{!c.handleOnClick}"</span>
+			<span class="na">onmouseout=</span><span class="s">"{!c.handleMouseLeave}"</span>
+			<span class="na">onmouseover=</span><span class="s">"{!c.handleMouseEnter}"</span>
+			<span class="na">tabindex=</span><span class="s">"-1"</span><span class="nt">&gt;</span>
+			<span class="nt">&lt;lightning:icon</span> <span class="na">class=</span><span class="s">"slds-icon-text-default ms-help-icon"</span> <span class="na">size=</span><span class="s">"xx-small"</span>
+				<span class="na">iconName=</span><span class="s">"utility:info"</span><span class="nt">/&gt;</span>
+			<span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"slds-assistive-text"</span><span class="nt">&gt;</span>Help<span class="nt">&lt;/span&gt;</span>
+		<span class="nt">&lt;/a&gt;</span>
+		<span class="nt">&lt;div</span> <span class="na">aura:id=</span><span class="s">"divHelp"</span> <span class="na">class=</span><span class="s">"slds-popover slds-popover_tooltip slds-nubbin_left-top ms-help-popup-in-header slds-hide"</span>
+			<span class="na">role=</span><span class="s">"tooltip"</span> <span class="na">aria-live=</span><span class="s">"polite"</span><span class="nt">&gt;</span>
+			<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"slds-popover__body ms-help-popup-body"</span><span class="nt">&gt;</span>
+				<span class="nt">&lt;ui:outputText</span> <span class="na">value=</span><span class="s">"{!v.text}"</span><span class="nt">/&gt;</span>
+			<span class="nt">&lt;/div&gt;</span>
+		<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/aura:component&gt;</span></code></pre></figure>
+
+<h2 id="customhelptextcontrollerjs">customHelpTextController.js</h2>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">({</span>
+	<span class="na">handleOnClick</span> <span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">component</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">$A</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="nx">component</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">"divHelp"</span><span class="p">),</span> <span class="s1">'slds-hide'</span><span class="p">);</span>
+	<span class="p">},</span>
+	<span class="na">handleMouseLeave</span> <span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">component</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">$A</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">component</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">"divHelp"</span><span class="p">),</span> <span class="s1">'slds-hide'</span><span class="p">);</span>
+	<span class="p">},</span>
+	<span class="na">handleMouseEnter</span> <span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">component</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">$A</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">component</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">"divHelp"</span><span class="p">),</span> <span class="s1">'slds-hide'</span><span class="p">);</span>
+	<span class="p">},</span>
+<span class="p">})</span></code></pre></figure>
+
+<p>The <code class="highlighter-rouge">handleOnClick</code> function is triggered by <code class="highlighter-rouge">onClick</code> event and it will allow this component to function properly when displayed on a mobile device. It will allow users to click on it in order to display a helpful message.</p>
+
+<h2 id="customhelptextcss">customHelpText.css</h2>
+
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.THIS</span> <span class="nc">.slds-icon</span><span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">1.1rem</span> <span class="cp">!important</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.THIS</span> <span class="nc">.ms-help-popup-in-header</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="m">-10px</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="m">55px</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-1rem</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">max-width</span><span class="p">:</span> <span class="m">20rem</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">overflow</span><span class="p">:</span> <span class="nb">visible</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">text-transform</span><span class="p">:</span> <span class="nb">none</span> <span class="cp">!important</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.THIS</span> <span class="nc">.ms-help-popup-in-header</span><span class="nd">:before</span><span class="o">,</span> <span class="nc">.THIS</span> <span class="nc">.ms-help-popup-in-header</span><span class="nd">:after</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">0.8rem</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">0.8rem</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">-webkit-transform</span><span class="p">:</span> <span class="n">rotate</span><span class="p">(</span><span class="m">45deg</span><span class="p">);</span>
+    <span class="nl">-ms-transform</span><span class="p">:</span> <span class="n">rotate</span><span class="p">(</span><span class="m">45deg</span><span class="p">);</span>
+    <span class="nl">transform</span><span class="p">:</span> <span class="n">rotate</span><span class="p">(</span><span class="m">45deg</span><span class="p">);</span>
+    <span class="nl">content</span><span class="p">:</span> <span class="s2">''</span><span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="nb">inherit</span><span class="p">;</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="m">-0.4rem</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">margin-top</span><span class="p">:</span> <span class="m">-.8rem</span> <span class="cp">!important</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.THIS</span> <span class="nc">.ms-help-popup-body</span> <span class="p">{</span>
+    <span class="nl">white-space</span><span class="p">:</span> <span class="n">unset</span> <span class="cp">!important</span><span class="p">;</span>
+    <span class="nl">word-break</span><span class="p">:</span> <span class="n">keep-all</span><span class="p">;</span>
+    <span class="nl">overflow-wrap</span><span class="p">:</span> <span class="n">break-word</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="how-to-use-it">How to use it?</h2>
+
+<p>The use of this component is rather simple - just place it anywhere you need it in markup and provide a helpful message:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;c:customHelpText</span> <span class="na">text=</span><span class="s">"This is a very helpful helptext. \nI hope it helped."</span> <span class="nt">/&gt;</span></code></pre></figure>
+
+<p><a href="/images/2018/2/18/helpText.png" target="_blank"><img src="/images/2018/2/18/helpText.png" alt="help_text" /></a></p>
+
+<p>In the image above I used the help text inside my custom <em>input</em> component, but I will need another blog post in order to explain it. I hope I’ll have time to write it soon.</p>
+
+<h2 id="possible-improvements">Possible improvements</h2>
+
+<p>The flexibility to show the help text bubble on different sides of the icon would be a helpful addition in certain cases. However, I’m no CSS guru, far from it, so it’s a task outside of my current capabilities. Also, adding an attribute to allow different icon to be shown instead of a hardcoded <code class="highlighter-rouge">utility:info</code> icon would be a quick and simple exercise.</p>
+
+<h2 id="additional-resources">Additional resources</h2>
+
+<p>If you want to learn more about the powerful Lightning Out technology and how to use it in Visualforce Pages follow <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/components_visualforce.htm">this link</a>. I believe that it’s a must use tool for any company that wishes to transition from Salesforce Classic to Lightning Experience.</p>
+
+  </div>
+
+  <div class="date">
+    Written on February 18, 2018
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/&title=Lightning Help Text Component&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Lightning Help Text Component&url=http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2018/02/18/Lightning-Help-Text/',
+		  'title': 'Lightning Help Text Component'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
