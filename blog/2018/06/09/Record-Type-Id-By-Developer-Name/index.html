@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Record Type Id by Developer Name – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code.
+
+" />
+    <meta property="og:description" content="Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Get Record Type Id by Developer Name" />
+    <meta property="twitter:title" content="Get Record Type Id by Developer Name" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Get Record Type Id by Developer Name - Smukov on Salesforce</title>
+<meta property="og:title" content="Get Record Type Id by Developer Name" />
+<meta name="description" content="Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code." />
+<meta property="og:description" content="Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code." />
+<link rel="canonical" href="http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-09T00:00:00+02:00" />
+<link rel="prev" href="http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" title="Lightning Help Text Component" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Get Record Type Id by Developer Name",
+    "datePublished": "2018-06-09T00:00:00+02:00",
+    "description": "Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code.",
+    "url": "http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Get Record Type Id by Developer Name</h1>
+
+  <div class="entry">
+    <p>Salesforce has finally provided us with a way to easily get Record Type Id by <strong>Developer Name</strong>, without using a SOQL query. This new feature comes with <strong>Summer ‘18 Release</strong> and it should help us write more efficient and reliable code.</p>
+
+<!--more-->
+
+<h2 id="the-old-approach">The old approach</h2>
+
+<p>Let’s imagine that we have a Record Type on Account object called <em>“Wholesale Partner”</em>. We would like to obtain the Id of this Record Type in order to assign it to the <code class="highlighter-rouge">RecordTypeId</code> field on the Account record during the insert operation.</p>
+
+<p>Previously, there were a couple of options to obtain a Record Type Id in order to assign it to a record, but none of them were really optimal. One approach was to use the <strong>Record Type Name</strong> in order to obtain a Record Type Id in the following way by using the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_sobject_describe.htm#apex_Schema_DescribeSObjectResult_getRecordTypeInfosByName"><code class="highlighter-rouge">getRecordTypeInfosByName()</code></a> method of the <code class="highlighter-rouge">DescribeSObjectResult</code> class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
+  <span class="n">Schema</span><span class="o">.</span><span class="na">SObjectType</span><span class="o">.</span><span class="na">Account</span><span class="o">.</span><span class="na">getRecordTypeInfosByName</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="err">'</span><span class="n">Wholesale</span> <span class="n">Partner</span><span class="err">'</span><span class="o">).</span><span class="na">getRecordTypeId</span><span class="o">();</span></code></pre></figure>
+
+<p>The issue here is that the <strong>Record Type Name</strong> is nothing but a <strong>label</strong>, which can be easily changed by an administrator in Production, thus breaking your code without any warning. The second issue with this approach is that the logic might break in multi-language environments in case somebody translates the label. However, as far as I know, this was the only approach to obtain a Record Type Id without issuing a SOQL query.</p>
+
+<p>This brings us to the second approach that uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_erd_recordtype.htm">RecordType object</a>. You can execute a SOQL query against this object to get the Record Type Id by <strong>Developer Name</strong>, which is much more stable than the <strong>label</strong>, it isn’t affected by translations, and cannot be changed that easily.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
+  <span class="o">[</span><span class="n">SELECT</span> <span class="n">Id</span> <span class="n">FROM</span> <span class="n">RecordType</span>
+    <span class="n">WHERE</span> <span class="n">DeveloperName</span> <span class="o">=</span> <span class="err">'</span><span class="n">Wholesale_Partner</span><span class="err">'</span> <span class="n">AND</span> <span class="n">sObjectType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Account</span><span class="err">'</span><span class="o">].</span><span class="na">Id</span><span class="o">;</span></code></pre></figure>
+
+<p>Although this approach is more reliable than the first, my issue with it is that it requires a SOQL query. In an environment that limits you to 100 SOQL queries per transaction, every one of them counts.</p>
+
+<h2 id="the-new-approach">The new approach</h2>
+
+<p>With <strong>Summer ‘18 Release</strong> we now finally have a way to use the <strong>Developer Name</strong> to obtain a Record Type Id without issuing a SOQL query. This is achieved by using the new <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_sobject_describe.htm#apex_Schema_DescribeSObjectResult_getRecordTypeInfosByDeveloperName"><code class="highlighter-rouge">getRecordTypeInfosByDeveloperName()</code></a> method of the <code class="highlighter-rouge">DescribeSObjectResult</code> class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
+  <span class="n">Schema</span><span class="o">.</span><span class="na">SObjectType</span><span class="o">.</span><span class="na">Account</span><span class="o">.</span><span class="na">getRecordTypeInfosByDeveloperName</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="err">'</span><span class="n">Wholesale_Partner</span><span class="err">'</span><span class="o">).</span><span class="na">getRecordTypeId</span><span class="o">();</span></code></pre></figure>
+
+<p>In my opinion, this should be a new standard for this kind of tasks, it’s both reliable and cheap on the resources. And if you are really concerned with resources and your logic requires to get Ids of different Record Types during execution, you should maybe consider caching the <code class="highlighter-rouge">Map&lt;String, Schema.RecordTypeInfo&gt;</code> returned by the <code class="highlighter-rouge">getRecordTypeInfosByDeveloperName()</code> method. If you are interested you can check out <a href="https://salesforce.stackexchange.com/questions/121620/what-governor-limits-impact-apex-describe-methods/121653#121653">this answer</a> on StackExchange with analysis on the resource consumption by different Apex Describe calls.</p>
+
+<p>In case you want to use the above sample in your code, you should replace the <code class="highlighter-rouge">Account</code> with the object that has your Record Type, and the <code class="highlighter-rouge">Wholesale_Partner</code> with the actual <strong>Developer Name</strong> of the Record Type that you need.</p>
+
+<h2 id="appendix-how-to-assign-a-record-type-id-to-a-record">Appendix: How to assign a Record Type Id to a Record</h2>
+
+<p>So now that you have a Record Type Id, you can assign it to a specific record by using the <code class="highlighter-rouge">RecordTypeId</code> field. Here’s an example for Account:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Account</span> <span class="n">acc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Account</span><span class="o">(</span><span class="n">Name</span><span class="o">=</span><span class="err">'</span><span class="n">Test</span> <span class="n">Account</span><span class="err">'</span><span class="o">,</span> <span class="n">RecordTypeId</span> <span class="o">=</span> <span class="n">recordTypeId</span><span class="o">);</span></code></pre></figure>
+
+<p>or through a property like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">acc</span><span class="o">.</span><span class="na">RecordTypeId</span> <span class="o">=</span> <span class="n">recordTypeId</span><span class="o">;</span></code></pre></figure>
+
+
+  </div>
+
+  <div class="date">
+    Written on June  9, 2018
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/&title=Get Record Type Id by Developer Name&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Get Record Type Id by Developer Name&url=http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2018/06/09/Record-Type-Id-By-Developer-Name/',
+		  'title': 'Get Record Type Id by Developer Name'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>

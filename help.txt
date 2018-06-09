@@ -1,0 +1,3 @@
+- Write and develop in DEV
+- Run: jekyll build
+- copy over the content from _site to the smukov.github.io folder and push to Github
