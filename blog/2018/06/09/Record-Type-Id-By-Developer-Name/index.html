@@ -99,7 +99,7 @@
 
 <p>The issue here is that the <strong>Record Type Name</strong> is nothing but a <strong>label</strong>, which can be easily changed by an administrator in Production, thus breaking your code without any warning. The second issue with this approach is that the logic might break in multi-language environments in case somebody translates the label. However, as far as I know, this was the only approach to obtain a Record Type Id without issuing a SOQL query.</p>
 
-<p>This brings us to the second approach that uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_erd_recordtype.htm">RecordType object</a>. You can execute a SOQL query against this object to get the Record Type Id by <strong>Developer Name</strong>, which is much more stable than the <strong>label</strong>, it isn’t affected by translations, and cannot be changed that easily.</p>
+<p>This brings us to the second approach that uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_recordtype.htm">RecordType object</a>. You can execute a SOQL query against this object to get the Record Type Id by <strong>Developer Name</strong>, which is much more stable than the <strong>label</strong>, it isn’t affected by translations, and cannot be changed that easily.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
   <span class="o">[</span><span class="n">SELECT</span> <span class="n">Id</span> <span class="n">FROM</span> <span class="n">RecordType</span>
