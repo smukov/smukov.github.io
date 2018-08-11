@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator><link href="http://smukov.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="http://smukov.github.io/" rel="alternate" type="text/html" /><updated>2018-08-11T16:19:18+02:00</updated><id>http://smukov.github.io/</id><title>Smukov on Salesforce</title><subtitle>Ideas and experiences of a Salesforce Developer</subtitle><entry><title>Post to Chatter from Process Builder with hyperlinks to records</title><link href="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" rel="alternate" type="text/html" title="Post to Chatter from Process Builder with hyperlinks to records" /><published>2018-08-11T00:00:00+02:00</published><updated>2018-08-11T00:00:00+02:00</updated><id>http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records</id><content type="html" xml:base="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/">&lt;p&gt;In &lt;strong&gt;Summer ‘18 Release&lt;/strong&gt; Salesforce provided a way in Chatter to &lt;a href=&quot;https://releasenotes.docs.salesforce.com/en-us/summer18/release-notes/rn_collab_slash_records.htm&quot;&gt;“Link to Your Most Relevant Records from a Post or Comment”&lt;/a&gt;. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as &lt;strong&gt;Process Builder&lt;/strong&gt; or &lt;strong&gt;Flow&lt;/strong&gt;. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.0.3">Jekyll</generator><link href="http://smukov.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="http://smukov.github.io/" rel="alternate" type="text/html" /><updated>2018-08-11T16:29:17+02:00</updated><id>http://smukov.github.io/</id><title>Smukov on Salesforce</title><subtitle>Ideas and experiences of a Salesforce Developer</subtitle><entry><title>Post to Chatter from Process Builder with hyperlinks to records</title><link href="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" rel="alternate" type="text/html" title="Post to Chatter from Process Builder with hyperlinks to records" /><published>2018-08-11T00:00:00+02:00</published><updated>2018-08-11T00:00:00+02:00</updated><id>http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records</id><content type="html" xml:base="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/">&lt;p&gt;In &lt;strong&gt;Summer ‘18 Release&lt;/strong&gt; Salesforce provided a way in Chatter to &lt;a href=&quot;https://releasenotes.docs.salesforce.com/en-us/summer18/release-notes/rn_collab_slash_records.htm&quot;&gt;“Link to Your Most Relevant Records from a Post or Comment”&lt;/a&gt;. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as &lt;strong&gt;Process Builder&lt;/strong&gt; or &lt;strong&gt;Flow&lt;/strong&gt;. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;/images/2018/8/11/chatter.png&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/images/2018/8/11/chatter.png&quot; alt=&quot;chatter_post&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -20,7 +20,7 @@
 
 &lt;p&gt;Hopefully, you have successfully deployed my Apex classes to your Sandbox so that we can use them from &lt;strong&gt;Process Builder&lt;/strong&gt; or &lt;strong&gt;Flow&lt;/strong&gt;. To test out this feature create a &lt;strong&gt;Process Builder&lt;/strong&gt; on Opportunity object and make it run every time a record is created or edited. Add a condition without any criteria, so that it is executed every time a &lt;strong&gt;Process Builder&lt;/strong&gt; is triggered (it should go without saying that we are doing this just for demo purposes, I don’t recommend using &lt;em&gt;no criteria&lt;/em&gt; in Production). Finally, add an &lt;em&gt;immediate action&lt;/em&gt; of type &lt;strong&gt;Apex&lt;/strong&gt; and name it “Post to Chatter”. Your Process Builder should look similar to this:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;/images/2018/8/11/pb.png&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/images/2018/8/11/pb.png&quot; alt=&quot;process_builder&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/images/2018/8/11/pb.PNG&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/images/2018/8/11/pb.PNG&quot; alt=&quot;process_builder&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;The Apex action takes in 2 required inputs and one optional:
 * &lt;strong&gt;Message&lt;/strong&gt; - this is a message of your Chatter post.
@@ -29,30 +29,28 @@
 
 &lt;p&gt;The &lt;strong&gt;Message&lt;/strong&gt; parameter should be of type &lt;strong&gt;Formula&lt;/strong&gt; so that we can concatenate field values from the related records. In order to post the same message as displayed at the beginning of this post, you can use the formula below:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-&#39;&amp;lt;p&amp;gt;Hi {&#39; &amp;amp; [Opportunity].OwnerId &amp;amp; &#39;},&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;your &amp;lt;b&amp;gt;Opportunity&amp;lt;/b&amp;gt; has been &amp;lt;i&amp;gt;updated&amp;lt;/i&amp;gt;. This is the parent &amp;lt;u&amp;gt;Account&amp;lt;/u&amp;gt; {&#39;
-&amp;amp; [Opportunity].AccountId &amp;amp; &#39;} and this is the &amp;lt;s&amp;gt;Opportunity&amp;lt;/s&amp;gt; {&#39; &amp;amp; [Opportunity].Id &amp;amp; &#39;}.&amp;lt;/p&amp;gt;&#39;
-&amp;amp;
-&#39;&amp;lt;p&amp;gt;&amp;amp;nbsp;&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;This is a new paragraph with a new line above it.&amp;lt;/p&amp;gt;&#39;
-&amp;amp;
-&#39;And this is a list: &amp;lt;ol&amp;gt; &amp;lt;li&amp;gt;Item #1&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Item #2&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Etc..&amp;lt;/li&amp;gt; &amp;lt;/ol&amp;gt;&#39;
-&amp;amp;
-&#39;&amp;lt;p&amp;gt;&amp;amp;nbsp;&amp;lt;/p&amp;gt;And one more list: &amp;lt;ul&amp;gt; &amp;lt;li&amp;gt;Item #1&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Item #2&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Etc..&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt;&#39;
-&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;‘&amp;lt;p&amp;gt;Hi {‘ &amp;amp; [Opportunity].OwnerId &amp;amp; ‘},&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;your &lt;b&gt;Opportunity&lt;/b&gt; has been &lt;i&gt;updated&lt;/i&gt;. This is the parent &lt;u&gt;Account&lt;/u&gt; {‘
+ &amp;amp; [Opportunity].AccountId &amp;amp; ‘} and this is the &lt;s&gt;Opportunity&lt;/s&gt; {‘ &amp;amp; [Opportunity].Id &amp;amp; ‘}.&amp;lt;/p&amp;gt;’
+ &amp;amp;
+ ‘&amp;lt;p&amp;gt; &amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;This is a new paragraph with a new line above it.&amp;lt;/p&amp;gt;’
+ &amp;amp;
+ ‘And this is a list: &amp;lt;ol&amp;gt; &amp;lt;li&amp;gt;Item #1&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Item #2&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Etc..&amp;lt;/li&amp;gt; &amp;lt;/ol&amp;gt;’
+ &amp;amp;
+ ‘&amp;lt;p&amp;gt; &amp;lt;/p&amp;gt;And one more list: &amp;lt;ul&amp;gt; &amp;lt;li&amp;gt;Item #1&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Item #2&amp;lt;/li&amp;gt; &amp;lt;li&amp;gt;Etc..&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt;’&lt;/p&gt;
 
 &lt;p&gt;It looks a bit messy on a first look, but keep in mind that I’ve added all the formatting tags I could in order to demonstrate all the different formatting capabilities when posting to Chatter. Your use case will probably result in a much simpler formula.&lt;/p&gt;
 
 &lt;p&gt;Below you can find a cheat sheet of different formatting options and codes to tailor the Chatter Post to your needs:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;p&amp;gt;Some Text&amp;lt;/p&amp;gt;&lt;/strong&gt; - this will place “Some Text” in a paragraph&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;b&amp;gt;Some Text&amp;lt;/b&amp;gt;&lt;/strong&gt; - this will make &lt;strong&gt;Some Text&lt;/strong&gt; bold&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;i&amp;gt;Some Text&amp;lt;/i&amp;gt;&lt;/strong&gt; - this will make &lt;em&gt;Some Text&lt;/em&gt; italic&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;u&amp;gt;Some Text&amp;lt;/u&amp;gt;&lt;/strong&gt; - this will underscore &lt;strong&gt;Some Text&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;s&amp;gt;Some Text&amp;lt;/s&amp;gt;&lt;/strong&gt; - this will strikethrough ~~Some Text~~&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;ol&amp;gt; **&amp;lt;li&amp;gt;Some Text&amp;lt;/li&amp;gt; &amp;lt;/ol&amp;gt;&lt;/strong&gt; - this will place “Some Text” in an ordered list&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;ul&amp;gt; **&amp;lt;li&amp;gt;Some Text&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt;&lt;/strong&gt; - this will place “Some Text” in an un-ordered list&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;&amp;lt;p&amp;gt;&amp;amp;nbsp;&amp;lt;/p&amp;gt;&lt;/strong&gt; - this will result in a &lt;strong&gt;new line&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&amp;lt;p&amp;gt;Some Text&amp;lt;/p&amp;gt; - this will place “Some Text” in a paragraph&lt;/li&gt;
+  &lt;li&gt;&amp;lt;b&amp;gt;Some Text&amp;lt;/b&amp;gt; - this will make &lt;strong&gt;Some Text&lt;/strong&gt; bold&lt;/li&gt;
+  &lt;li&gt;&amp;lt;i&amp;gt;Some Text&amp;lt;/i&amp;gt; - this will make &lt;em&gt;Some Text&lt;/em&gt; italic&lt;/li&gt;
+  &lt;li&gt;&amp;lt;u&amp;gt;Some Text&amp;lt;/u&amp;gt; - this will underscore &lt;strong&gt;Some Text&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&amp;lt;s&amp;gt;Some Text&amp;lt;/s&amp;gt; - this will strikethrough ~~Some Text~~&lt;/li&gt;
+  &lt;li&gt;&amp;lt;ol&amp;gt; &amp;lt;li&amp;gt;Some Text&amp;lt;/li&amp;gt; &amp;lt;/ol&amp;gt; - this will place “Some Text” in an ordered list&lt;/li&gt;
+  &lt;li&gt;&amp;lt;ul&amp;gt; &amp;lt;li&amp;gt;Some Text&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt; - this will place “Some Text” in an un-ordered list&lt;/li&gt;
+  &lt;li&gt;&amp;lt;p&amp;gt;&amp;amp;nbsp;&amp;lt;/p&amp;gt;** - this will result in a &lt;strong&gt;new line&lt;/strong&gt;&lt;/li&gt;
   &lt;li&gt;{SOME_RECORD_ID} - placing a record ID between the curly brackets will make a hyperlink or @-mention to that record&lt;/li&gt;
 &lt;/ul&gt;
 

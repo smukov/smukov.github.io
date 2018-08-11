@@ -109,7 +109,7 @@
 
 <p>Hopefully, you have successfully deployed my Apex classes to your Sandbox so that we can use them from <strong>Process Builder</strong> or <strong>Flow</strong>. To test out this feature create a <strong>Process Builder</strong> on Opportunity object and make it run every time a record is created or edited. Add a condition without any criteria, so that it is executed every time a <strong>Process Builder</strong> is triggered (it should go without saying that we are doing this just for demo purposes, I don’t recommend using <em>no criteria</em> in Production). Finally, add an <em>immediate action</em> of type <strong>Apex</strong> and name it “Post to Chatter”. Your Process Builder should look similar to this:</p>
 
-<p><a href="/images/2018/8/11/pb.png" target="_blank"><img src="/images/2018/8/11/pb.png" alt="process_builder" /></a></p>
+<p><a href="/images/2018/8/11/pb.PNG" target="_blank"><img src="/images/2018/8/11/pb.PNG" alt="process_builder" /></a></p>
 
 <p>The Apex action takes in 2 required inputs and one optional:
 * <strong>Message</strong> - this is a message of your Chatter post.
@@ -118,30 +118,28 @@
 
 <p>The <strong>Message</strong> parameter should be of type <strong>Formula</strong> so that we can concatenate field values from the related records. In order to post the same message as displayed at the beginning of this post, you can use the formula below:</p>
 
-<p><code class="highlighter-rouge">
-'&lt;p&gt;Hi {' &amp; [Opportunity].OwnerId &amp; '},&lt;/p&gt;&lt;p&gt;your &lt;b&gt;Opportunity&lt;/b&gt; has been &lt;i&gt;updated&lt;/i&gt;. This is the parent &lt;u&gt;Account&lt;/u&gt; {'
-&amp; [Opportunity].AccountId &amp; '} and this is the &lt;s&gt;Opportunity&lt;/s&gt; {' &amp; [Opportunity].Id &amp; '}.&lt;/p&gt;'
-&amp;
-'&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;This is a new paragraph with a new line above it.&lt;/p&gt;'
-&amp;
-'And this is a list: &lt;ol&gt; &lt;li&gt;Item #1&lt;/li&gt; &lt;li&gt;Item #2&lt;/li&gt; &lt;li&gt;Etc..&lt;/li&gt; &lt;/ol&gt;'
-&amp;
-'&lt;p&gt;&amp;nbsp;&lt;/p&gt;And one more list: &lt;ul&gt; &lt;li&gt;Item #1&lt;/li&gt; &lt;li&gt;Item #2&lt;/li&gt; &lt;li&gt;Etc..&lt;/li&gt; &lt;/ul&gt;'
-</code></p>
+<p>‘&lt;p&gt;Hi {‘ &amp; [Opportunity].OwnerId &amp; ‘},&lt;/p&gt;&lt;p&gt;your <b>Opportunity</b> has been <i>updated</i>. This is the parent <u>Account</u> {‘
+ &amp; [Opportunity].AccountId &amp; ‘} and this is the <s>Opportunity</s> {‘ &amp; [Opportunity].Id &amp; ‘}.&lt;/p&gt;’
+ &amp;
+ ‘&lt;p&gt; &lt;/p&gt;&lt;p&gt;This is a new paragraph with a new line above it.&lt;/p&gt;’
+ &amp;
+ ‘And this is a list: &lt;ol&gt; &lt;li&gt;Item #1&lt;/li&gt; &lt;li&gt;Item #2&lt;/li&gt; &lt;li&gt;Etc..&lt;/li&gt; &lt;/ol&gt;’
+ &amp;
+ ‘&lt;p&gt; &lt;/p&gt;And one more list: &lt;ul&gt; &lt;li&gt;Item #1&lt;/li&gt; &lt;li&gt;Item #2&lt;/li&gt; &lt;li&gt;Etc..&lt;/li&gt; &lt;/ul&gt;’</p>
 
 <p>It looks a bit messy on a first look, but keep in mind that I’ve added all the formatting tags I could in order to demonstrate all the different formatting capabilities when posting to Chatter. Your use case will probably result in a much simpler formula.</p>
 
 <p>Below you can find a cheat sheet of different formatting options and codes to tailor the Chatter Post to your needs:</p>
 
 <ul>
-  <li><strong>&lt;p&gt;Some Text&lt;/p&gt;</strong> - this will place “Some Text” in a paragraph</li>
-  <li><strong>&lt;b&gt;Some Text&lt;/b&gt;</strong> - this will make <strong>Some Text</strong> bold</li>
-  <li><strong>&lt;i&gt;Some Text&lt;/i&gt;</strong> - this will make <em>Some Text</em> italic</li>
-  <li><strong>&lt;u&gt;Some Text&lt;/u&gt;</strong> - this will underscore <strong>Some Text</strong></li>
-  <li><strong>&lt;s&gt;Some Text&lt;/s&gt;</strong> - this will strikethrough ~~Some Text~~</li>
-  <li><strong>&lt;ol&gt; **&lt;li&gt;Some Text&lt;/li&gt; &lt;/ol&gt;</strong> - this will place “Some Text” in an ordered list</li>
-  <li><strong>&lt;ul&gt; **&lt;li&gt;Some Text&lt;/li&gt; &lt;/ul&gt;</strong> - this will place “Some Text” in an un-ordered list</li>
-  <li><strong>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</strong> - this will result in a <strong>new line</strong></li>
+  <li>&lt;p&gt;Some Text&lt;/p&gt; - this will place “Some Text” in a paragraph</li>
+  <li>&lt;b&gt;Some Text&lt;/b&gt; - this will make <strong>Some Text</strong> bold</li>
+  <li>&lt;i&gt;Some Text&lt;/i&gt; - this will make <em>Some Text</em> italic</li>
+  <li>&lt;u&gt;Some Text&lt;/u&gt; - this will underscore <strong>Some Text</strong></li>
+  <li>&lt;s&gt;Some Text&lt;/s&gt; - this will strikethrough ~~Some Text~~</li>
+  <li>&lt;ol&gt; &lt;li&gt;Some Text&lt;/li&gt; &lt;/ol&gt; - this will place “Some Text” in an ordered list</li>
+  <li>&lt;ul&gt; &lt;li&gt;Some Text&lt;/li&gt; &lt;/ul&gt; - this will place “Some Text” in an un-ordered list</li>
+  <li>&lt;p&gt;&amp;nbsp;&lt;/p&gt;** - this will result in a <strong>new line</strong></li>
   <li>{SOME_RECORD_ID} - placing a record ID between the curly brackets will make a hyperlink or @-mention to that record</li>
 </ul>
 
