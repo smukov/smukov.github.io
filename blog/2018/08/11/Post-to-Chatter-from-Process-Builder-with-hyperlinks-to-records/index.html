@@ -9,12 +9,12 @@
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
 
     
-    <meta name="description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:
+    <meta name="description" content="In Summer ‘18 Release Salesforce provided a way to “Link to Your Most Relevant Records from a Post or Comment” in Chatter. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:
 
 
 
 " />
-    <meta property="og:description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:
+    <meta property="og:description" content="In Summer ‘18 Release Salesforce provided a way to “Link to Your Most Relevant Records from a Post or Comment” in Chatter. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:
 
 
 
@@ -42,8 +42,8 @@
     <!-- Begin Jekyll SEO tag v1.3.2 -->
 <title>Post to Chatter from Process Builder with hyperlinks to records - Smukov on Salesforce</title>
 <meta property="og:title" content="Post to Chatter from Process Builder with hyperlinks to records" />
-<meta name="description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:" />
-<meta property="og:description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:" />
+<meta name="description" content="In Summer ‘18 Release Salesforce provided a way to “Link to Your Most Relevant Records from a Post or Comment” in Chatter. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:" />
+<meta property="og:description" content="In Summer ‘18 Release Salesforce provided a way to “Link to Your Most Relevant Records from a Post or Comment” in Chatter. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:" />
 <link rel="canonical" href="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" />
 <meta property="og:url" content="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" />
 <meta property="og:site_name" content="Smukov on Salesforce" />
@@ -56,7 +56,7 @@
     "@type": "BlogPosting",
     "headline": "Post to Chatter from Process Builder with hyperlinks to records",
     "datePublished": "2018-08-11T00:00:00+02:00",
-    "description": "In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:",
+    "description": "In Summer ‘18 Release Salesforce provided a way to “Link to Your Most Relevant Records from a Post or Comment” in Chatter. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:",
     "url": "http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/"
   }
 </script>
@@ -87,7 +87,7 @@
   <h1>Post to Chatter from Process Builder with hyperlinks to records</h1>
 
   <div class="entry">
-    <p>In <strong>Summer ‘18 Release</strong> Salesforce provided a way in Chatter to <a href="https://releasenotes.docs.salesforce.com/en-us/summer18/release-notes/rn_collab_slash_records.htm">“Link to Your Most Relevant Records from a Post or Comment”</a>. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as <strong>Process Builder</strong> or <strong>Flow</strong>. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:</p>
+    <p>In <strong>Summer ‘18 Release</strong> Salesforce provided a way to <a href="https://releasenotes.docs.salesforce.com/en-us/summer18/release-notes/rn_collab_slash_records.htm">“Link to Your Most Relevant Records from a Post or Comment”</a> in Chatter. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as <strong>Process Builder</strong> or <strong>Flow</strong>. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:</p>
 
 <p><a href="/images/2018/8/11/chatter.png" target="_blank"><img src="/images/2018/8/11/chatter.png" alt="chatter_post" /></a></p>
 
@@ -95,7 +95,7 @@
 
 <h2 id="prerequisite">Prerequisite</h2>
 
-<p>As I said at the beginning of this post, there is no way to do this out-of-the-box just yet. Because of that, we have to write some custom code to get around this limitation, but luckily for you, I already did this. You can use the below <strong>Deploy to Salesforce</strong> button to deploy a couple of Apex classes to your sandbox from <a href="https://github.com/smukov/ConnectApiHelper">my GitHub repository</a>.</p>
+<p>As I said at the beginning of this post, there is no way to do this out-of-the-box just yet. Because of that, we have to write some custom code to get around this limitation, but luckily, I already did this. You can use the below <strong>Deploy to Salesforce</strong> button to deploy a couple of Apex classes to your sandbox from <a href="https://github.com/smukov/ConnectApiHelper">my GitHub repository</a>.</p>
 
 <p><a href="https://githubsfdeploy.herokuapp.com?owner=smukov&amp;repo=ConnectApiHelper&amp;ref=master">
   <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png" />
@@ -107,14 +107,17 @@
 
 <h2 id="post-to-chatter-from-process-builder">Post to Chatter from Process builder</h2>
 
-<p>Hopefully, you have successfully deployed my Apex classes to your Sandbox so that we can use them from <strong>Process Builder</strong> or <strong>Flow</strong>. To test out this feature create a <strong>Process Builder</strong> on Opportunity object and make it run every time a record is created or edited. Add a condition without any criteria, so that it is executed every time a <strong>Process Builder</strong> is triggered (it should go without saying that we are doing this just for demo purposes, I don’t recommend using <em>no criteria</em> in Production). Finally, add an <em>immediate action</em> of type <strong>Apex</strong> and name it “Post to Chatter”. Your Process Builder should look similar to this:</p>
+<p>Hopefully, you have successfully deployed my Apex classes to your Sandbox so that you can use them from <strong>Process Builder</strong> or <strong>Flow</strong>. To test out this feature create a <strong>Process Builder</strong> on Opportunity object and make it run every time a record is created or edited. Next, add a condition without any criteria, so that it is executed every time a <strong>Process Builder</strong> is triggered (it should go without saying that we are doing this just for demo purposes, I don’t recommend using <em>no criteria</em> in Production). Finally, add an <strong>Apex</strong> <em>immediate action</em> and name it <em>“Post to Chatter”</em>. Your Process Builder should look similar to this:</p>
 
 <p><a href="/images/2018/8/11/pb.PNG" target="_blank"><img src="/images/2018/8/11/pb.PNG" alt="process_builder" /></a></p>
 
-<p>The Apex action takes in 2 required inputs and one optional:
-* <strong>Message</strong> - this is a message of your Chatter post.
-* <strong>Subject Id</strong> - the parent record of the post. This can be a user ID, a group ID, or a record ID.
-* <strong>Community Id</strong> - the optional ID of the community to where to post the message. This can be either the ID of a community, “internal”, or null (blank).</p>
+<p>The Apex action takes in 2 required inputs and one optional:</p>
+
+<ul>
+  <li><strong>Message</strong> - this is a message for your Chatter post.</li>
+  <li><strong>Subject Id</strong> - the parent record of the post. This can be a user ID, a group ID, or a record ID.</li>
+  <li><strong>Community Id</strong> - the optional ID of a community to which to post the message. This can either be an ID of a community, “internal”, or null (blank).</li>
+</ul>
 
 <p>The <strong>Message</strong> parameter should be of type <strong>Formula</strong> so that we can concatenate field values from the related records. In order to post the same message as displayed at the beginning of this post, you can use the formula below:</p>
 
@@ -153,7 +156,7 @@
 
 <p>If you are a Salesforce Administrator that doesn’t use code you can probably stop reading at this point. The rest of the post is about how you can use the <code class="highlighter-rouge">ConnectApiHelper</code> class to easily (and more naturally) post to Chatter from Apex code without juggling all those different <code class="highlighter-rouge">ConnectApi</code> classes.</p>
 
-<p>As said in a disclaimer above the <code class="highlighter-rouge">ConnectApiHelper</code> class was not built by me, I just added a few more lines of code and methods to support bulk posting and adding hyperlinks to records that are not Users or Groups. You can see all the code and some quick instructions in my <a href="https://github.com/forcedotcom/ConnectApiHelper">GitHub repo</a>. The quick gist of it is that if you deploy the <code class="highlighter-rouge">ConnectApiHelper</code> class to your sandbox you will be able to post to Chatter from Apex in the following manner:</p>
+<p>As said in a disclaimer above the <code class="highlighter-rouge">ConnectApiHelper</code> class was not built by me, I just added a few more lines of code and methods to support bulk posting and adding hyperlinks to records. You can see all the code and some quick instructions in <a href="https://github.com/smukov/ConnectApiHelper">my GitHub repo</a>. The quick gist of it is that if you deploy the <code class="highlighter-rouge">ConnectApiHelper</code> class to your sandbox you will be able to post to Chatter from Apex in the following manner:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Opportunity</span> <span class="n">opp</span> <span class="o">=</span> <span class="o">[</span><span class="n">SELECT</span> <span class="n">Id</span><span class="o">,</span> <span class="n">AccountId</span><span class="o">,</span> <span class="n">OwnerId</span> <span class="n">FROM</span> <span class="n">Opportunity</span> <span class="n">LIMIT</span> <span class="mi">1</span><span class="o">];</span>
 
@@ -163,7 +166,7 @@
   <span class="err">'</span><span class="n">Hi</span> <span class="o">{</span><span class="err">'</span> <span class="o">+</span> <span class="n">opp</span><span class="o">.</span><span class="na">OwnerId</span> <span class="o">+</span> <span class="err">'</span><span class="o">},</span> <span class="n">your</span> <span class="n">Opportunity</span> <span class="o">{</span><span class="err">'</span> <span class="o">+</span> <span class="n">opp</span><span class="o">.</span><span class="na">Id</span> <span class="o">+</span> <span class="err">'</span><span class="o">}</span> <span class="n">has</span> <span class="n">been</span> <span class="o">&lt;</span><span class="n">i</span><span class="o">&gt;</span><span class="n">updated</span><span class="o">&lt;/</span><span class="n">i</span><span class="o">&gt;.</span><span class="err">'</span><span class="o">));</span></code></pre></figure>
 
 <blockquote>
-  <p>Note that you can use all the Rich Text Formatting tags already described previously in this post.</p>
+  <p>Note that you can use all the formatting tags already described previously in this post.</p>
 </blockquote>
 
 <p>Finally, in order to perform a bulk posting of multiple Chatter Posts at once by using only 1 DML statement, you can use the <code class="highlighter-rouge">ConnectApiHelper.postFeedItemBatch</code> method:</p>
@@ -182,11 +185,11 @@
   <span class="n">Network</span><span class="o">.</span><span class="na">getNetworkId</span><span class="o">(),</span>
   <span class="n">chatterPosts</span><span class="o">);</span></code></pre></figure>
 
-<p>That’s the gist of its use in Apex. For more details visit the <a href="https://github.com/forcedotcom/ConnectApiHelper">GitHub repository</a> and explore the code and documentation.</p>
+<p>That’s the gist of its use in Apex. For more details visit the <a href="https://github.com/smukov/ConnectApiHelper">GitHub repository</a> and explore the code and documentation.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>We covered how to <strong>Post to Chatter</strong> using <strong>Process Builder</strong> and <strong>Flow</strong> using the code that can be obtained <a href="https://github.com/forcedotcom/ConnectApiHelper">here</a>, or quickly deployed using the <strong>Deploy to Salesforce</strong> button below. We also quickly covered how to use the provided helper classes to more easily <strong>Post to Chatter</strong> from <strong>Apex</strong>. I sincerely hope that this will help some people out there. If you have any questions or suggestion feel free to comment below or log an issue at GitHub.</p>
+<p>We covered how to <strong>Post to Chatter</strong> using <strong>Process Builder</strong> and <strong>Flow</strong> using the code that can be manually obtained <a href="https://github.com/smukov/ConnectApiHelper">here</a>, or quickly deployed using the <strong>Deploy to Salesforce</strong> button below. We also quickly covered how to use the provided helper classes to more easily <strong>Post to Chatter</strong> from <strong>Apex</strong>. I sincerely hope that this will help some people out there. If you have any questions or suggestion feel free to comment below or log an issue at GitHub.</p>
 
 <p><a href="https://githubsfdeploy.herokuapp.com?owner=smukov&amp;repo=ConnectApiHelper&amp;ref=master">
   <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png" />
