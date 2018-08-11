@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Post to Chatter from Process Builder with hyperlinks to records – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:
+
+
+
+" />
+    <meta property="og:description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:
+
+
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Post to Chatter from Process Builder with hyperlinks to records" />
+    <meta property="twitter:title" content="Post to Chatter from Process Builder with hyperlinks to records" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v1.3.2 -->
+<title>Post to Chatter from Process Builder with hyperlinks to records - Smukov on Salesforce</title>
+<meta property="og:title" content="Post to Chatter from Process Builder with hyperlinks to records" />
+<meta name="description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:" />
+<meta property="og:description" content="In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:" />
+<link rel="canonical" href="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-08-11T00:00:00+02:00" />
+<link rel="prev" href="http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/" title="Get Record Type Id by Developer Name" />
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Post to Chatter from Process Builder with hyperlinks to records",
+    "datePublished": "2018-08-11T00:00:00+02:00",
+    "description": "In Summer ‘18 Release Salesforce provided a way in Chatter to “Link to Your Most Relevant Records from a Post or Comment”. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as Process Builder or Flow. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:",
+    "url": "http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/"
+  }
+</script>
+<!-- End Jekyll SEO tag -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Post to Chatter from Process Builder with hyperlinks to records</h1>
+
+  <div class="entry">
+    <p>In <strong>Summer ‘18 Release</strong> Salesforce provided a way in Chatter to <a href="https://releasenotes.docs.salesforce.com/en-us/summer18/release-notes/rn_collab_slash_records.htm">“Link to Your Most Relevant Records from a Post or Comment”</a>. This feature can be used directly while typing in Chatter, or from Apex code, however, they haven’t provided an out-of-the-box way to do this from declarative tools such as <strong>Process Builder</strong> or <strong>Flow</strong>. In this post I’ll provide a way how you can use these tools to easily post something similar to what I did in the picture below:</p>
+
+<p><a href="/images/2018/8/11/chatter.png" target="_blank"><img src="/images/2018/8/11/chatter.png" alt="chatter_post" /></a></p>
+
+<!--more-->
+
+<h2 id="prerequisite">Prerequisite</h2>
+
+<p>As I said at the beginning of this post, there is no way to do this out-of-the-box just yet. Because of that, we have to write some custom code to get around this limitation, but luckily for you, I already did this. You can use the below <strong>Deploy to Salesforce</strong> button to deploy a couple of Apex classes to your sandbox from <a href="https://github.com/smukov/ConnectApiHelper">my GitHub repository</a>.</p>
+
+<p><a href="https://githubsfdeploy.herokuapp.com?owner=smukov&amp;repo=ConnectApiHelper&amp;ref=master">
+  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png" />
+</a></p>
+
+<blockquote>
+  <p>Disclaimer: <code class="highlighter-rouge">ConnectApiHelper</code> class was not built by me. I have forked the <a href="https://github.com/forcedotcom/ConnectApiHelper">official Salesforce repository</a> and added the additional code to support adding links to records (previously it only supported mentiones of Users and Groups). I have also added the ability to bulk post up to 500 Chatter elements using 1 DML statement. Everything else was written by Salesforce.</p>
+</blockquote>
+
+<h2 id="post-to-chatter-from-process-builder">Post to Chatter from Process builder</h2>
+
+<p>Hopefully, you have successfully deployed my Apex classes to your Sandbox so that we can use them from <strong>Process Builder</strong> or <strong>Flow</strong>. To test out this feature create a <strong>Process Builder</strong> on Opportunity object and make it run every time a record is created or edited. Add a condition without any criteria, so that it is executed every time a <strong>Process Builder</strong> is triggered (it should go without saying that we are doing this just for demo purposes, I don’t recommend using <em>no criteria</em> in Production). Finally, add an <em>immediate action</em> of type <strong>Apex</strong> and name it “Post to Chatter”. Your Process Builder should look similar to this:</p>
+
+<p><a href="/images/2018/8/11/pb.png" target="_blank"><img src="/images/2018/8/11/pb.png" alt="process_builder" /></a></p>
+
+<p>The Apex action takes in 2 required inputs and one optional:
+* <strong>Message</strong> - this is a message of your Chatter post.
+* <strong>Subject Id</strong> - the parent record of the post. This can be a user ID, a group ID, or a record ID.
+* <strong>Community Id</strong> - the optional ID of the community to where to post the message. This can be either the ID of a community, “internal”, or null (blank).</p>
+
+<p>The <strong>Message</strong> parameter should be of type <strong>Formula</strong> so that we can concatenate field values from the related records. In order to post the same message as displayed at the beginning of this post, you can use the formula below:</p>
+
+<p><code class="highlighter-rouge">
+'&lt;p&gt;Hi {' &amp; [Opportunity].OwnerId &amp; '},&lt;/p&gt;&lt;p&gt;your &lt;b&gt;Opportunity&lt;/b&gt; has been &lt;i&gt;updated&lt;/i&gt;. This is the parent &lt;u&gt;Account&lt;/u&gt; {'
+&amp; [Opportunity].AccountId &amp; '} and this is the &lt;s&gt;Opportunity&lt;/s&gt; {' &amp; [Opportunity].Id &amp; '}.&lt;/p&gt;'
+&amp;
+'&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;This is a new paragraph with a new line above it.&lt;/p&gt;'
+&amp;
+'And this is a list: &lt;ol&gt; &lt;li&gt;Item #1&lt;/li&gt; &lt;li&gt;Item #2&lt;/li&gt; &lt;li&gt;Etc..&lt;/li&gt; &lt;/ol&gt;'
+&amp;
+'&lt;p&gt;&amp;nbsp;&lt;/p&gt;And one more list: &lt;ul&gt; &lt;li&gt;Item #1&lt;/li&gt; &lt;li&gt;Item #2&lt;/li&gt; &lt;li&gt;Etc..&lt;/li&gt; &lt;/ul&gt;'
+</code></p>
+
+<p>It looks a bit messy on a first look, but keep in mind that I’ve added all the formatting tags I could in order to demonstrate all the different formatting capabilities when posting to Chatter. Your use case will probably result in a much simpler formula.</p>
+
+<p>Below you can find a cheat sheet of different formatting options and codes to tailor the Chatter Post to your needs:</p>
+
+<ul>
+  <li><strong>&lt;p&gt;Some Text&lt;/p&gt;</strong> - this will place “Some Text” in a paragraph</li>
+  <li><strong>&lt;b&gt;Some Text&lt;/b&gt;</strong> - this will make <strong>Some Text</strong> bold</li>
+  <li><strong>&lt;i&gt;Some Text&lt;/i&gt;</strong> - this will make <em>Some Text</em> italic</li>
+  <li><strong>&lt;u&gt;Some Text&lt;/u&gt;</strong> - this will underscore <strong>Some Text</strong></li>
+  <li><strong>&lt;s&gt;Some Text&lt;/s&gt;</strong> - this will strikethrough ~~Some Text~~</li>
+  <li><strong>&lt;ol&gt; **&lt;li&gt;Some Text&lt;/li&gt; &lt;/ol&gt;</strong> - this will place “Some Text” in an ordered list</li>
+  <li><strong>&lt;ul&gt; **&lt;li&gt;Some Text&lt;/li&gt; &lt;/ul&gt;</strong> - this will place “Some Text” in an un-ordered list</li>
+  <li><strong>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</strong> - this will result in a <strong>new line</strong></li>
+  <li>{SOME_RECORD_ID} - placing a record ID between the curly brackets will make a hyperlink or @-mention to that record</li>
+</ul>
+
+<p>That’s all the formatting options you have, but keep in mind that you can mix and match them as well, making a <strong><em>bold italic text</em></strong> for example.</p>
+
+<h2 id="post-to-chatter-from-flow">Post to Chatter from Flow</h2>
+
+<p>The above was a quick demonstration on how to Post to Chatter from <strong>Process Builder</strong> with @-mentiones or with hyperlinks to existing records. You can use a similar approach from <strong>Flow</strong> by using the <code class="highlighter-rouge">PostToChatterAction</code> flow element. I won’t be demonstrating this approach in this blog post, as I believe that the information above should be sufficient. However, if you have any questions let me know below and I’ll try to answer them as quickly as possible, or even write an additional blog post to cover <strong>Flow</strong>.</p>
+
+<h2 id="post-to-chatter-from-apex">Post to Chatter from Apex</h2>
+
+<p>If you are a Salesforce Administrator that doesn’t use code you can probably stop reading at this point. The rest of the post is about how you can use the <code class="highlighter-rouge">ConnectApiHelper</code> class to easily (and more naturally) post to Chatter from Apex code without juggling all those different <code class="highlighter-rouge">ConnectApi</code> classes.</p>
+
+<p>As said in a disclaimer above the <code class="highlighter-rouge">ConnectApiHelper</code> class was not built by me, I just added a few more lines of code and methods to support bulk posting and adding hyperlinks to records that are not Users or Groups. You can see all the code and some quick instructions in my <a href="https://github.com/forcedotcom/ConnectApiHelper">GitHub repo</a>. The quick gist of it is that if you deploy the <code class="highlighter-rouge">ConnectApiHelper</code> class to your sandbox you will be able to post to Chatter from Apex in the following manner:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Opportunity</span> <span class="n">opp</span> <span class="o">=</span> <span class="o">[</span><span class="n">SELECT</span> <span class="n">Id</span><span class="o">,</span> <span class="n">AccountId</span><span class="o">,</span> <span class="n">OwnerId</span> <span class="n">FROM</span> <span class="n">Opportunity</span> <span class="n">LIMIT</span> <span class="mi">1</span><span class="o">];</span>
+
+<span class="n">ConnectApiHelper</span><span class="o">.</span><span class="na">postFeedItemWithMentions</span><span class="o">(</span>
+  <span class="n">Network</span><span class="o">.</span><span class="na">getNetworkId</span><span class="o">(),</span> <span class="c1">//community Id where to post, or "internal", or null</span>
+  <span class="n">opp</span><span class="o">.</span><span class="na">AccountId</span><span class="o">,</span> <span class="c1">//this is the record where the post will appear</span>
+  <span class="err">'</span><span class="n">Hi</span> <span class="o">{</span><span class="err">'</span> <span class="o">+</span> <span class="n">opp</span><span class="o">.</span><span class="na">OwnerId</span> <span class="o">+</span> <span class="err">'</span><span class="o">},</span> <span class="n">your</span> <span class="n">Opportunity</span> <span class="o">{</span><span class="err">'</span> <span class="o">+</span> <span class="n">opp</span><span class="o">.</span><span class="na">Id</span> <span class="o">+</span> <span class="err">'</span><span class="o">}</span> <span class="n">has</span> <span class="n">been</span> <span class="o">&lt;</span><span class="n">i</span><span class="o">&gt;</span><span class="n">updated</span><span class="o">&lt;/</span><span class="n">i</span><span class="o">&gt;.</span><span class="err">'</span><span class="o">));</span></code></pre></figure>
+
+<blockquote>
+  <p>Note that you can use all the Rich Text Formatting tags already described previously in this post.</p>
+</blockquote>
+
+<p>Finally, in order to perform a bulk posting of multiple Chatter Posts at once by using only 1 DML statement, you can use the <code class="highlighter-rouge">ConnectApiHelper.postFeedItemBatch</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">ConnectApi</span><span class="o">.</span><span class="na">FeedItemInput</span><span class="o">&gt;</span> <span class="n">chatterPosts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ConnectApi</span><span class="o">.</span><span class="na">FeedItemInput</span><span class="o">&gt;();</span>
+
+<span class="c1">//add up to 500 Chatter Posts to a list</span>
+<span class="n">chatterPosts</span><span class="o">.</span><span class="na">add</span><span class="o">(</span>
+  <span class="o">(</span><span class="n">ConnectApi</span><span class="o">.</span><span class="na">FeedItemInput</span><span class="o">)</span>
+  <span class="n">ConnectApiHelper</span><span class="o">.</span><span class="na">createFeedItemWithMentions</span><span class="o">(</span>
+    <span class="err">'</span><span class="n">me</span><span class="err">'</span><span class="o">,</span>
+    <span class="err">'</span><span class="n">Hi</span> <span class="o">{</span><span class="err">'</span> <span class="o">+</span> <span class="n">opp</span><span class="o">.</span><span class="na">OwnerId</span> <span class="o">+</span> <span class="err">'</span><span class="o">},</span> <span class="n">your</span> <span class="n">Opportunity</span> <span class="o">{</span><span class="err">'</span> <span class="o">+</span> <span class="n">opp</span><span class="o">.</span><span class="na">Id</span> <span class="o">+</span> <span class="err">'</span><span class="o">}</span> <span class="n">has</span> <span class="n">been</span> <span class="o">&lt;</span><span class="n">i</span><span class="o">&gt;</span><span class="n">updated</span><span class="o">&lt;/</span><span class="n">i</span><span class="o">&gt;.</span><span class="err">'</span><span class="o">));</span>
+
+<span class="c1">//finally post them all in a batch</span>
+<span class="n">ConnectApiHelper</span><span class="o">.</span><span class="na">postFeedItemBatch</span><span class="o">(</span>
+  <span class="n">Network</span><span class="o">.</span><span class="na">getNetworkId</span><span class="o">(),</span>
+  <span class="n">chatterPosts</span><span class="o">);</span></code></pre></figure>
+
+<p>That’s the gist of its use in Apex. For more details visit the <a href="https://github.com/forcedotcom/ConnectApiHelper">GitHub repository</a> and explore the code and documentation.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>We covered how to <strong>Post to Chatter</strong> using <strong>Process Builder</strong> and <strong>Flow</strong> using the code that can be obtained <a href="https://github.com/forcedotcom/ConnectApiHelper">here</a>, or quickly deployed using the <strong>Deploy to Salesforce</strong> button below. We also quickly covered how to use the provided helper classes to more easily <strong>Post to Chatter</strong> from <strong>Apex</strong>. I sincerely hope that this will help some people out there. If you have any questions or suggestion feel free to comment below or log an issue at GitHub.</p>
+
+<p><a href="https://githubsfdeploy.herokuapp.com?owner=smukov&amp;repo=ConnectApiHelper&amp;ref=master">
+  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png" />
+</a></p>
+
+  </div>
+
+  <div class="date">
+    Written on August 11, 2018
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/&title=Post to Chatter from Process Builder with hyperlinks to records&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Post to Chatter from Process Builder with hyperlinks to records&url=http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/',
+		  'title': 'Post to Chatter from Process Builder with hyperlinks to records'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
