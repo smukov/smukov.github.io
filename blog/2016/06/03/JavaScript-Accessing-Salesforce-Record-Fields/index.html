@@ -35,9 +35,11 @@
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
     
-    <!-- Begin Jekyll SEO tag v1.3.2 -->
-<title>Accessing Salesforce Record Fields with JavaScript - Smukov on Salesforce</title>
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Accessing Salesforce Record Fields with JavaScript | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
 <meta property="og:title" content="Accessing Salesforce Record Fields with JavaScript" />
+<meta property="og:locale" content="en_US" />
 <meta name="description" content="I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:" />
 <meta property="og:description" content="I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:" />
 <link rel="canonical" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" />
@@ -45,19 +47,10 @@
 <meta property="og:site_name" content="Smukov on Salesforce" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-06-03T00:00:00+02:00" />
-<link rel="next" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" title="Sorting Salesforce Records with JavaScript" />
-<link rel="prev" href="http://smukov.github.io/blog/2016/05/15/Visualforce-Page-to-Include-Header-and-Sidebar/" title="Make a Managed Visualforce Page show Header and Sidebar" />
 <script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "BlogPosting",
-    "headline": "Accessing Salesforce Record Fields with JavaScript",
-    "datePublished": "2016-06-03T00:00:00+02:00",
-    "description": "I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:",
-    "url": "http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/"
-  }
-</script>
+{"url":"http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/","headline":"Accessing Salesforce Record Fields with JavaScript","dateModified":"2016-06-03T00:00:00+02:00","datePublished":"2016-06-03T00:00:00+02:00","description":"I wanted to share with you a utility function that I’ve created and stored in my Static Resources. I’m using this function to dynamically access fields from JavaScript objects that represent Salesforce records obtained by sforce.connection.query or Remote Action. Here’s the function below:","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
+
   </head>
 
   <body>
@@ -93,7 +86,7 @@
  * @return {[Field_Value]}   [Null - if part of the path is not defined, otherwise it will return the value of the field]
  */</span>
 <span class="kd">var</span> <span class="nx">getRecordField</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">api</span><span class="p">){</span>
-   <span class="kd">var</span> <span class="nx">subRecords</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">);</span>
+   <span class="kd">var</span> <span class="nx">subRecords</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">.</span><span class="dl">'</span><span class="p">);</span>
    <span class="kd">var</span> <span class="nx">topLevelObj</span> <span class="o">=</span> <span class="nx">record</span><span class="p">;</span>
    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">subRecords</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
        <span class="k">if</span><span class="p">(</span><span class="nx">topLevelObj</span> <span class="o">==</span> <span class="kc">null</span><span class="p">){</span>
@@ -112,23 +105,23 @@
 <p>Sample use:</p>
 
 <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'something'</span><span class="p">,</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="dl">'</span><span class="s1">something</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
-    <span class="na">nested_property</span> <span class="p">:</span> <span class="s1">'nested'</span><span class="p">,</span>
+    <span class="na">nested_property</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">nested</span><span class="dl">'</span><span class="p">,</span>
     <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'z'</span><span class="p">}</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">z</span><span class="dl">'</span><span class="p">}</span>
     <span class="p">]</span>
   <span class="p">}</span>
 <span class="p">};</span>
 
 <span class="c1">//get first level property</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="s1">'one_property'</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="dl">'</span><span class="s1">one_property</span><span class="dl">'</span><span class="p">));</span>
 
 <span class="c1">//get property of a nested object</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="s1">'another_property.nested_property'</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="dl">'</span><span class="s1">another_property.nested_property</span><span class="dl">'</span><span class="p">));</span>
 
 <span class="c1">//you can even access an array objects</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="s1">'another_property.nested_array.1.x'</span><span class="p">));</span></code></pre></figure>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getRecordField</span><span class="p">(</span><span class="nx">test</span><span class="p">,</span> <span class="dl">'</span><span class="s1">another_property.nested_array.1.x</span><span class="dl">'</span><span class="p">));</span></code></pre></figure>
 
 <p>I’ve found this method to be incredibly useful when I have to work with hierarchy of objects returned from Salesforce (e.g. - <code class="highlighter-rouge">record.Order_Line__r.Primary_Site__r.Street_Addess__c</code>). I hope that you’ll find this useful as well.</p>
 

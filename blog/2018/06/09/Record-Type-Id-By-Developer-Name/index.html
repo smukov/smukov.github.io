@@ -35,9 +35,11 @@
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
     
-    <!-- Begin Jekyll SEO tag v1.3.2 -->
-<title>Get Record Type Id by Developer Name - Smukov on Salesforce</title>
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Get Record Type Id by Developer Name | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
 <meta property="og:title" content="Get Record Type Id by Developer Name" />
+<meta property="og:locale" content="en_US" />
 <meta name="description" content="Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code." />
 <meta property="og:description" content="Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code." />
 <link rel="canonical" href="http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/" />
@@ -45,19 +47,10 @@
 <meta property="og:site_name" content="Smukov on Salesforce" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-06-09T00:00:00+02:00" />
-<link rel="next" href="http://smukov.github.io/blog/2018/08/11/Post-to-Chatter-from-Process-Builder-with-hyperlinks-to-records/" title="Post to Chatter from Process Builder with hyperlinks to records" />
-<link rel="prev" href="http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" title="Lightning Help Text Component" />
 <script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "BlogPosting",
-    "headline": "Get Record Type Id by Developer Name",
-    "datePublished": "2018-06-09T00:00:00+02:00",
-    "description": "Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code.",
-    "url": "http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/"
-  }
-</script>
+{"url":"http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/","headline":"Get Record Type Id by Developer Name","dateModified":"2018-06-09T00:00:00+02:00","datePublished":"2018-06-09T00:00:00+02:00","description":"Salesforce has finally provided us with a way to easily get Record Type Id by Developer Name, without using a SOQL query. This new feature comes with Summer ‘18 Release and it should help us write more efficient and reliable code.","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2018/06/09/Record-Type-Id-By-Developer-Name/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
+
   </head>
 
   <body>
@@ -94,17 +87,17 @@
 
 <p>Previously, there were a couple of options to obtain a Record Type Id in order to assign it to a record, but none of them were really optimal. One approach was to use the <strong>Record Type Name</strong> in order to obtain a Record Type Id in the following way by using the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_sobject_describe.htm#apex_Schema_DescribeSObjectResult_getRecordTypeInfosByName"><code class="highlighter-rouge">getRecordTypeInfosByName()</code></a> method of the <code class="highlighter-rouge">DescribeSObjectResult</code> class:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
-  <span class="n">Schema</span><span class="o">.</span><span class="na">SObjectType</span><span class="o">.</span><span class="na">Account</span><span class="o">.</span><span class="na">getRecordTypeInfosByName</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="err">'</span><span class="n">Wholesale</span> <span class="n">Partner</span><span class="err">'</span><span class="o">).</span><span class="na">getRecordTypeId</span><span class="o">();</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
+  <span class="nc">Schema</span><span class="o">.</span><span class="na">SObjectType</span><span class="o">.</span><span class="na">Account</span><span class="o">.</span><span class="na">getRecordTypeInfosByName</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="err">'</span><span class="nc">Wholesale</span> <span class="nc">Partner</span><span class="err">'</span><span class="o">).</span><span class="na">getRecordTypeId</span><span class="o">();</span></code></pre></figure>
 
 <p>The issue here is that the <strong>Record Type Name</strong> is nothing but a <strong>label</strong>, which can be easily changed by an administrator in Production, thus breaking your code without any warning. The second issue with this approach is that the logic might break in multi-language environments in case somebody translates the label. However, as far as I know, this was the only approach to obtain a Record Type Id without issuing a SOQL query.</p>
 
 <p>This brings us to the second approach that uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_recordtype.htm">RecordType object</a>. You can execute a SOQL query against this object to get the Record Type Id by <strong>Developer Name</strong>, which is much more stable than the <strong>label</strong>, it isn’t affected by translations, and cannot be changed that easily.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
-  <span class="o">[</span><span class="n">SELECT</span> <span class="n">Id</span> <span class="n">FROM</span> <span class="n">RecordType</span>
-    <span class="n">WHERE</span> <span class="n">DeveloperName</span> <span class="o">=</span> <span class="err">'</span><span class="n">Wholesale_Partner</span><span class="err">'</span> <span class="n">AND</span> <span class="n">sObjectType</span> <span class="o">=</span> <span class="err">'</span><span class="n">Account</span><span class="err">'</span><span class="o">].</span><span class="na">Id</span><span class="o">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
+  <span class="o">[</span><span class="no">SELECT</span> <span class="nc">Id</span> <span class="no">FROM</span> <span class="nc">RecordType</span>
+    <span class="no">WHERE</span> <span class="nc">DeveloperName</span> <span class="o">=</span> <span class="err">'</span><span class="n">Wholesale_Partner</span><span class="err">'</span> <span class="no">AND</span> <span class="n">sObjectType</span> <span class="o">=</span> <span class="err">'</span><span class="nc">Account</span><span class="err">'</span><span class="o">].</span><span class="na">Id</span><span class="o">;</span></code></pre></figure>
 
 <p>Although this approach is more reliable than the first, my issue with it is that it requires a SOQL query. In an environment that limits you to 100 SOQL queries per transaction, every one of them counts.</p>
 
@@ -112,11 +105,11 @@
 
 <p>With <strong>Summer ‘18 Release</strong> we now finally have a way to use the <strong>Developer Name</strong> to obtain a Record Type Id without issuing a SOQL query. This is achieved by using the new <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_sobject_describe.htm#apex_Schema_DescribeSObjectResult_getRecordTypeInfosByDeveloperName"><code class="highlighter-rouge">getRecordTypeInfosByDeveloperName()</code></a> method of the <code class="highlighter-rouge">DescribeSObjectResult</code> class:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
-  <span class="n">Schema</span><span class="o">.</span><span class="na">SObjectType</span><span class="o">.</span><span class="na">Account</span><span class="o">.</span><span class="na">getRecordTypeInfosByDeveloperName</span><span class="o">()</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Id</span> <span class="n">recordTypeId</span> <span class="o">=</span>
+  <span class="nc">Schema</span><span class="o">.</span><span class="na">SObjectType</span><span class="o">.</span><span class="na">Account</span><span class="o">.</span><span class="na">getRecordTypeInfosByDeveloperName</span><span class="o">()</span>
     <span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="err">'</span><span class="n">Wholesale_Partner</span><span class="err">'</span><span class="o">).</span><span class="na">getRecordTypeId</span><span class="o">();</span></code></pre></figure>
 
-<p>In my opinion, this should be a new standard for this kind of tasks, it’s both reliable and cheap on the resources. And if you are really concerned with resources and your logic requires to get Ids of different Record Types during execution, you should maybe consider caching the <code class="highlighter-rouge">Map&lt;String, Schema.RecordTypeInfo&gt;</code> returned by the <code class="highlighter-rouge">getRecordTypeInfosByDeveloperName()</code> method. If you are interested you can check out <a href="https://salesforce.stackexchange.com/questions/121620/what-governor-limits-impact-apex-describe-methods/121653#121653">this answer</a> on StackExchange with analysis on the resource consumption by different Apex Describe calls.</p>
+<p>In my opinion, this should be a new standard for this kind of tasks, it’s both reliable and cheap on the resources. If you are really concerned with resources that your logic requires to get Ids of different Record Types during execution, you should consider caching the <code class="highlighter-rouge">Map&lt;String, Schema.RecordTypeInfo&gt;</code> returned by the <code class="highlighter-rouge">getRecordTypeInfosByDeveloperName()</code> method. If you are interested you can check out <a href="https://salesforce.stackexchange.com/questions/121620/what-governor-limits-impact-apex-describe-methods/121653#121653">this answer</a> on StackExchange with analysis on the resource consumption by different Apex Describe calls.</p>
 
 <p>In case you want to use the above sample in your code, you should replace the <code class="highlighter-rouge">Account</code> with the object that has your Record Type, and the <code class="highlighter-rouge">Wholesale_Partner</code> with the actual <strong>Developer Name</strong> of the Record Type that you need.</p>
 
@@ -124,7 +117,7 @@
 
 <p>So now that you have a Record Type Id, you can assign it to a specific record by using the <code class="highlighter-rouge">RecordTypeId</code> field. Here’s an example for Account:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Account</span> <span class="n">acc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Account</span><span class="o">(</span><span class="n">Name</span><span class="o">=</span><span class="err">'</span><span class="n">Test</span> <span class="n">Account</span><span class="err">'</span><span class="o">,</span> <span class="n">RecordTypeId</span> <span class="o">=</span> <span class="n">recordTypeId</span><span class="o">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">Account</span> <span class="n">acc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Account</span><span class="o">(</span><span class="nc">Name</span><span class="o">=</span><span class="err">'</span><span class="nc">Test</span> <span class="nc">Account</span><span class="err">'</span><span class="o">,</span> <span class="nc">RecordTypeId</span> <span class="o">=</span> <span class="n">recordTypeId</span><span class="o">);</span></code></pre></figure>
 
 <p>or through a property like this:</p>
 

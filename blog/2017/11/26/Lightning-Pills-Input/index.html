@@ -43,29 +43,22 @@ The component will also be able to validate the provided input upon entering, an
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
     
-    <!-- Begin Jekyll SEO tag v1.3.2 -->
-<title>Lightning Pills Input Component - Smukov on Salesforce</title>
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Lightning Pills Input Component | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
 <meta property="og:title" content="Lightning Pills Input Component" />
-<meta name="description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it." />
-<meta property="og:description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it." />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below: The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it." />
+<meta property="og:description" content="In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below: The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it." />
 <link rel="canonical" href="http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" />
 <meta property="og:url" content="http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/" />
 <meta property="og:site_name" content="Smukov on Salesforce" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-11-26T00:00:00+01:00" />
-<link rel="next" href="http://smukov.github.io/blog/2018/02/18/Lightning-Help-Text/" title="Lightning Help Text Component" />
-<link rel="prev" href="http://smukov.github.io/blog/2017/06/21/Lightning-Toast-Component/" title="Lightning Toast Component" />
 <script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "BlogPosting",
-    "headline": "Lightning Pills Input Component",
-    "datePublished": "2017-11-26T00:00:00+01:00",
-    "description": "In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below:The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it.",
-    "url": "http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/"
-  }
-</script>
+{"url":"http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/","headline":"Lightning Pills Input Component","dateModified":"2017-11-26T00:00:00+01:00","datePublished":"2017-11-26T00:00:00+01:00","description":"In this post we’ll create a custom Lightning component which breaks down the input and utilizes Salesforce lightning:pill components to display the results. You can see a sample of this component in the image below: The component will also be able to validate the provided input upon entering, and will prepare it for saving to database. So, let’s get to it.","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2017/11/26/Lightning-Pills-Input/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
+
   </head>
 
   <body>
@@ -167,7 +160,7 @@ The component will also be able to validate the provided input upon entering, an
 
 <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">({</span>
   <span class="na">scriptsLoaded</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">cmp</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.scriptsLoaded</span><span class="dl">'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
     <span class="nx">helper</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
   <span class="p">},</span>
 
@@ -180,26 +173,26 @@ The component will also be able to validate the provided input upon entering, an
   <span class="p">},</span>
 
   <span class="na">handleValueChanged</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.valueDataLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">)</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.valueDataLoaded'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.valueDataLoaded</span><span class="dl">'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.scriptsLoaded</span><span class="dl">'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span> <span class="o">&amp;&amp;</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.value</span><span class="dl">'</span><span class="p">)</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">cmp</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.valueDataLoaded</span><span class="dl">'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
       <span class="nx">helper</span><span class="p">.</span><span class="nx">parseFieldToPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">},</span>
 
   <span class="na">onKeyUpInput</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">delimiter</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiter'</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">inputText</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">'inputText'</span><span class="p">).</span><span class="nx">getElement</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">delimiter</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.delimiter</span><span class="dl">'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">inputText</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">inputText</span><span class="dl">'</span><span class="p">).</span><span class="nx">getElement</span><span class="p">();</span>
     <span class="kd">var</span> <span class="nx">currentInput</span> <span class="o">=</span> <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nx">currentInput</span><span class="p">[</span><span class="nx">currentInput</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">delimiter</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">helper</span><span class="p">.</span><span class="nx">addNewPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">currentInput</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">delimiter</span><span class="p">));</span>
-      <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+      <span class="nx">inputText</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
     <span class="p">}</span>
   <span class="p">},</span>
 
   <span class="na">onRemovePill</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">pillId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">getSource</span><span class="p">().</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.name'</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">pillId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">getSource</span><span class="p">().</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.name</span><span class="dl">'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.pills</span><span class="dl">'</span><span class="p">);</span>
 
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pills</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">if</span> <span class="p">(</span><span class="nx">pillId</span> <span class="o">===</span> <span class="nx">pills</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
@@ -208,7 +201,7 @@ The component will also be able to validate the provided input upon entering, an
       <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
+    <span class="nx">cmp</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.pills</span><span class="dl">'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
   <span class="p">}</span>
 <span class="p">})</span></code></pre></figure>
 
@@ -220,17 +213,17 @@ The component will also be able to validate the provided input upon entering, an
 
 <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">({</span>
   <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.scriptsLoaded'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.scriptsLoaded</span><span class="dl">'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">helper</span><span class="p">.</span><span class="nx">parseFieldToPills</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">},</span>
 
   <span class="na">addNewPills</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.pills</span><span class="dl">'</span><span class="p">);</span>
 
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">values</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
       <span class="kd">var</span> <span class="nx">trimmedVal</span> <span class="o">=</span> <span class="nx">values</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">trim</span><span class="p">();</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">trimmedVal</span> <span class="o">!==</span> <span class="s2">""</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">trimmedVal</span> <span class="o">!==</span> <span class="dl">""</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">pills</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
           <span class="na">id</span><span class="p">:</span> <span class="nx">lexUtil</span><span class="p">.</span><span class="nx">guidGenerator</span><span class="p">(),</span>
           <span class="na">label</span><span class="p">:</span> <span class="nx">trimmedVal</span><span class="p">,</span>
@@ -239,34 +232,37 @@ The component will also be able to validate the provided input upon entering, an
       <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
+    <span class="nx">cmp</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.pills</span><span class="dl">'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
   <span class="p">},</span>
 
   <span class="na">isInputValid</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">regexUtil</span><span class="p">.</span><span class="nx">validateInput</span><span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.validationTypes'</span><span class="p">),</span> <span class="nx">value</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">regexUtil</span><span class="p">.</span><span class="nx">validateInput</span><span class="p">(</span><span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.validationTypes</span><span class="dl">'</span><span class="p">),</span> <span class="nx">value</span><span class="p">);</span>
   <span class="p">},</span>
 
   <span class="na">parsePillsToField</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">delimiterInDatabase</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiterInDatabase'</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">fieldStr</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.pills</span><span class="dl">'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">delimiterInDatabase</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.delimiterInDatabase</span><span class="dl">'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">fieldStr</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
 
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pills</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">//NOTE: I think that it's smarter to allow saving to database, but it's debatable. It could be abstracted to component's attribute.</span>
-      <span class="c1">//if(pills[i].isValid)</span>
+      <span class="c1">//NOTE: I think that it's smarter to allow saving to database, but it's debatable. It could be abstracted to component's attribute.
+</span>
+      <span class="c1">//if(pills[i].isValid)
+</span>
       <span class="nx">fieldStr</span> <span class="o">+=</span> <span class="nx">pills</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">label</span> <span class="o">+</span> <span class="nx">delimiterInDatabase</span><span class="p">;</span>
     <span class="p">}</span>
 
     <span class="k">try</span> <span class="p">{</span>
-      <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">,</span> <span class="nx">fieldStr</span><span class="p">);</span>
+      <span class="nx">cmp</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.value</span><span class="dl">'</span><span class="p">,</span> <span class="nx">fieldStr</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">//ignore issue that occurs when trying to set unbinded value</span>
+      <span class="c1">//ignore issue that occurs when trying to set unbinded value
+</span>
     <span class="p">}</span>
   <span class="p">},</span>
 
   <span class="na">parseFieldToPills</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cmp</span><span class="p">,</span> <span class="nx">helper</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">fieldStr</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.value'</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">delimiterInDatabase</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'v.delimiterInDatabase'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">fieldStr</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.value</span><span class="dl">'</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">delimiterInDatabase</span> <span class="o">=</span> <span class="nx">cmp</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.delimiterInDatabase</span><span class="dl">'</span><span class="p">);</span>
     <span class="kd">var</span> <span class="nx">pills</span> <span class="o">=</span> <span class="p">[];</span>
     <span class="kd">var</span> <span class="nx">splitFieldStr</span> <span class="o">=</span> <span class="p">[];</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">fieldStr</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
@@ -274,7 +270,7 @@ The component will also be able to validate the provided input upon entering, an
     <span class="p">}</span>
 
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">splitFieldStr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">splitFieldStr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">""</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">splitFieldStr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!=</span> <span class="dl">""</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">pills</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
           <span class="na">id</span><span class="p">:</span> <span class="nx">lexUtil</span><span class="p">.</span><span class="nx">guidGenerator</span><span class="p">(),</span>
           <span class="na">label</span><span class="p">:</span> <span class="nx">splitFieldStr</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span>
@@ -283,7 +279,7 @@ The component will also be able to validate the provided input upon entering, an
       <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="nx">cmp</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'v.pills'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
+    <span class="nx">cmp</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">v.pills</span><span class="dl">'</span><span class="p">,</span> <span class="nx">pills</span><span class="p">);</span>
   <span class="p">}</span>
 <span class="p">})</span></code></pre></figure>
 

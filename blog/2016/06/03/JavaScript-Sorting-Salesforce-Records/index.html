@@ -35,9 +35,11 @@
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
     
-    <!-- Begin Jekyll SEO tag v1.3.2 -->
-<title>Sorting Salesforce Records with JavaScript - Smukov on Salesforce</title>
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Sorting Salesforce Records with JavaScript | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
 <meta property="og:title" content="Sorting Salesforce Records with JavaScript" />
+<meta property="og:locale" content="en_US" />
 <meta name="description" content="In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties." />
 <meta property="og:description" content="In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties." />
 <link rel="canonical" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" />
@@ -45,19 +47,10 @@
 <meta property="og:site_name" content="Smukov on Salesforce" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-06-03T00:00:00+02:00" />
-<link rel="next" href="http://smukov.github.io/blog/2017/06/21/Lightning-Toast-Component/" title="Lightning Toast Component" />
-<link rel="prev" href="http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/" title="Accessing Salesforce Record Fields with JavaScript" />
 <script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "BlogPosting",
-    "headline": "Sorting Salesforce Records with JavaScript",
-    "datePublished": "2016-06-03T00:00:00+02:00",
-    "description": "In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.",
-    "url": "http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/"
-  }
-</script>
+{"url":"http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/","headline":"Sorting Salesforce Records with JavaScript","dateModified":"2016-06-03T00:00:00+02:00","datePublished":"2016-06-03T00:00:00+02:00","description":"In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
+
   </head>
 
   <body>
@@ -96,7 +89,7 @@
  */</span>
  <span class="kd">var</span> <span class="nx">advancedDynamicSort</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
          <span class="kd">var</span> <span class="nx">sortOrder</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-         <span class="k">if</span><span class="p">(</span><span class="nx">property</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">"-"</span><span class="p">)</span> <span class="p">{</span>
+         <span class="k">if</span><span class="p">(</span><span class="nx">property</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">-</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
              <span class="nx">sortOrder</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
              <span class="nx">property</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
          <span class="p">}</span>
@@ -109,40 +102,40 @@
 <p>Sample use:</p>
 
 <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">[{</span>
-  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'something'</span><span class="p">,</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="dl">'</span><span class="s1">something</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
     <span class="na">nested_property</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'z'</span><span class="p">}</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">z</span><span class="dl">'</span><span class="p">}</span>
     <span class="p">]</span>
   <span class="p">}</span>
 <span class="p">},{</span>
-  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'something else'</span><span class="p">,</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="dl">'</span><span class="s1">something else</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
     <span class="na">nested_property</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
     <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'a'</span><span class="p">}</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">}</span>
     <span class="p">]</span>
   <span class="p">}</span>
 <span class="p">},{</span>
-  <span class="na">one_property</span><span class="p">:</span> <span class="s1">'random'</span><span class="p">,</span>
+  <span class="na">one_property</span><span class="p">:</span> <span class="dl">'</span><span class="s1">random</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">another_property</span> <span class="p">:</span> <span class="p">{</span>
     <span class="na">nested_property</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="na">nested_array</span> <span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'y'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="s1">'s'</span><span class="p">}</span>
+      <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">},</span> <span class="p">{</span><span class="na">x</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">s</span><span class="dl">'</span><span class="p">}</span>
     <span class="p">]</span>
   <span class="p">}</span>
 <span class="p">}];</span>
 
 <span class="c1">//sort by first level property</span>
-<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="s1">'one_property'</span><span class="p">));</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="dl">'</span><span class="s1">one_property</span><span class="dl">'</span><span class="p">));</span>
 
 <span class="c1">//sort by property of a nested object</span>
-<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="s1">'another_property.nested_property'</span><span class="p">));</span>
+<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="dl">'</span><span class="s1">another_property.nested_property</span><span class="dl">'</span><span class="p">));</span>
 
 <span class="c1">//you can even access an array objects, and sort descending by</span>
 <span class="c1">//prepending minus (-) in front of the property string</span>
-<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="s1">'-another_property.nested_array.1.x'</span><span class="p">));</span></code></pre></figure>
+<span class="nx">test</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">advancedDynamicSort</span><span class="p">(</span><span class="dl">'</span><span class="s1">-another_property.nested_array.1.x</span><span class="dl">'</span><span class="p">));</span></code></pre></figure>
 
 <p>I have to give credit to the original creator of the <code class="highlighter-rouge">dynamicSort</code> function, Ege Özcan, and his <a href="http://stackoverflow.com/a/4760279/634951">StackOverflow answer</a>. All I did in the end was adjusting his method to work with my function that dynamically reads object’s properties in order to make the sorter even more flexible.</p>
 
