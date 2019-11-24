@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Automatic Email Template Selection in Case Feed – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="Specifying default values, based on certain criteria, when sending an email message from the Case Activity Feed sounds like a pretty standard requirement. However, for some reason, I struggled a bit with finding a solution to this problem, so I decided to document it here.
+
+" />
+    <meta property="og:description" content="Specifying default values, based on certain criteria, when sending an email message from the Case Activity Feed sounds like a pretty standard requirement. However, for some reason, I struggled a bit with finding a solution to this problem, so I decided to document it here.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Automatic Email Template Selection in Case Feed" />
+    <meta property="twitter:title" content="Automatic Email Template Selection in Case Feed" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Automatic Email Template Selection in Case Feed | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Automatic Email Template Selection in Case Feed" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Specifying default values, based on certain criteria, when sending an email message from the Case Activity Feed sounds like a pretty standard requirement. However, for some reason, I struggled a bit with finding a solution to this problem, so I decided to document it here." />
+<meta property="og:description" content="Specifying default values, based on certain criteria, when sending an email message from the Case Activity Feed sounds like a pretty standard requirement. However, for some reason, I struggled a bit with finding a solution to this problem, so I decided to document it here." />
+<link rel="canonical" href="http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-24T00:00:00+01:00" />
+<script type="application/ld+json">
+{"url":"http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/","headline":"Automatic Email Template Selection in Case Feed","dateModified":"2019-11-24T00:00:00+01:00","datePublished":"2019-11-24T00:00:00+01:00","description":"Specifying default values, based on certain criteria, when sending an email message from the Case Activity Feed sounds like a pretty standard requirement. However, for some reason, I struggled a bit with finding a solution to this problem, so I decided to document it here.","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Automatic Email Template Selection in Case Feed</h1>
+
+  <div class="entry">
+    <p>Specifying default values, based on certain criteria, when <strong>sending an email message from the Case Activity Feed</strong> sounds like a pretty standard requirement. However, for some reason, I struggled a bit with finding a solution to this problem, so I decided to document it here.</p>
+
+<!--more-->
+
+<h2 id="requirements">Requirements</h2>
+
+<p>My requirements were to automatically preselect a <code class="highlighter-rouge">ValidatedFromAddress</code> field and an <a href="https://help.salesforce.com/articleView?id=email_use_a_template_to_standardize_email.htm&amp;type=5" target="_blank">Email Template</a> when an Agent opens the standard email composer widget (i.e. <strong>Send Email Quick Action</strong>) in the Case Activity Feed. The field and the template needed to be dynamically preselected based on certain fields on a Case record - for simplicity, let’s call this field <code class="highlighter-rouge">Type</code>.</p>
+
+<p>When I heard the above requirements I immediately had a couple of coding solutions in my head that “<em>had to work</em>” in case everything else fails, but as always, I decided to put them aside initially and to first consult my good friend Google. I wanted to see if anyone already invented this wheel, or even better if there’s a standard Salesforce approach to this that will save me the headache of too much maintenance in the future.</p>
+
+<h2 id="salesforce-documentation-and-attempts-that-failed">Salesforce Documentation (and attempts that failed)</h2>
+
+<p>So I started <em>googling</em> and I immediately found <a href="https://help.salesforce.com/articleView?id=case_interaction_send_email_quick_action_default_email_template_lex.htm&amp;type=5" target="_blank">this</a> documentation. Not a bad solution, however, it’s not dynamic.</p>
+
+<p>Second (or more like N-th) attempt returned me <a href="https://help.salesforce.com/articleView?id=case_interaction_default_templates.htm&amp;type=5" target="_blank">this</a> document. OK, that looks promising, even though it involves the creation of an Apex class, but I’m a developer so I can live with that - heck, I’ll even enjoy it.</p>
+
+<p>I started implementing this solution and was really puzzled when it didn’t work. Why? Because I missed to read the fine print that said <em>Available in: Salesforce Classic</em>, but not in Lightning, and I needed this to work in Lightning. Nonetheless, I was happy for this exercise, as it turned out that it held a key for making my 3rd attempt a success.</p>
+
+<p>Finally, on my third attempt, I somehow stumbled upon this interface called <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_interface_QuickAction_QuickActionDefaultsHandler.htm" target="_blank"><code class="highlighter-rouge">QuickActionDefaultsHandler</code></a>. Here’s the quick excerpt from its documentation:</p>
+
+<blockquote>
+  <p>The <code class="highlighter-rouge">QuickAction.QuickActionDefaultsHandler</code> interface lets you specify the default values for the standard Email and Send Email actions in the case feed. You can use this interface to specify the From address, CC address, BCC address, subject, and email body for the Email action in the case feed. You can use the interface to pre-populate these fields based on the context where the action is displayed, such as the case origin (for example, country) and subject.</p>
+</blockquote>
+
+<p>Perfect, exactly what I need. I just hope it works in Lightning.</p>
+
+<h2 id="a-simplified-working-solution">A Simplified Working Solution</h2>
+
+<p>First, create a class - I called mine <code class="highlighter-rouge">EmailTemplateSelector</code>. Salesforce <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_interface_QuickAction_QuickActionDefaultsHandler.htm" target="_blank">documentation</a> already holds quite a few useful examples of its implementation, but here’s my simplified example below:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">global</span> <span class="kd">class</span> <span class="nc">EmailTemplateSelector</span> <span class="kd">implements</span> <span class="nc">QuickAction</span><span class="o">.</span><span class="na">QuickActionDefaultsHandler</span> <span class="o">{</span>
+  <span class="n">global</span> <span class="nf">EmailTemplateSelector</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+  <span class="n">global</span> <span class="kt">void</span> <span class="nf">onInitDefaults</span><span class="o">(</span><span class="nc">QuickAction</span><span class="o">.</span><span class="na">QuickActionDefaults</span><span class="o">[]</span> <span class="n">defaultsList</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">Integer</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">defaultsList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="nc">QuickAction</span><span class="o">.</span><span class="na">QuickActionDefaults</span> <span class="n">defaults</span> <span class="o">=</span> <span class="n">defaultsList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">j</span><span class="o">);</span>
+
+      <span class="c1">// Check if the quick action is the standard case feed `SendEmail` action</span>
+      <span class="k">if</span> <span class="o">(</span>
+        <span class="n">defaults</span> <span class="k">instanceof</span> <span class="nc">QuickAction</span><span class="o">.</span><span class="na">SendEmailQuickActionDefaults</span> <span class="o">&amp;&amp;</span>
+        <span class="n">defaults</span><span class="o">.</span><span class="na">getTargetSObject</span><span class="o">().</span><span class="na">getSObjectType</span><span class="o">()</span> <span class="o">==</span> <span class="nc">EmailMessage</span><span class="o">.</span><span class="na">sObjectType</span> <span class="o">&amp;&amp;</span>
+        <span class="n">defaults</span><span class="o">.</span><span class="na">getActionType</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="err">'</span><span class="nc">SendEmail</span><span class="err">'</span><span class="o">)</span>
+      <span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">actionName</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="na">getActionName</span><span class="o">();</span>
+        <span class="nc">Id</span> <span class="n">contextId</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="na">getContextId</span><span class="o">();</span>
+
+        <span class="c1">// check if the related object is a Case</span>
+        <span class="c1">// and process it in the same way no matter if it's </span>
+        <span class="c1">// a `SendEmail`, `Reply`, or `Reply All` action</span>
+        <span class="k">if</span> <span class="o">(</span>
+          <span class="o">(</span><span class="n">actionName</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="err">'</span><span class="nc">Case</span><span class="o">.</span><span class="na">SendEmail</span><span class="err">'</span><span class="o">)</span> <span class="o">||</span>
+           <span class="n">actionName</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="err">'</span><span class="nc">EmailMessage</span><span class="o">.</span><span class="na">_Reply</span><span class="err">'</span><span class="o">)</span> <span class="o">||</span>
+           <span class="n">actionName</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="err">'</span><span class="nc">EmailMessage</span><span class="o">.</span><span class="na">_ReplyAll</span><span class="err">'</span><span class="o">))</span> <span class="o">&amp;&amp;</span>
+           <span class="n">contextId</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span>
+           <span class="n">contextId</span><span class="o">.</span><span class="na">getSobjectType</span><span class="o">()</span> <span class="o">==</span> <span class="nc">Case</span><span class="o">.</span><span class="na">sObjectType</span>
+        <span class="o">)</span> <span class="o">{</span>
+          <span class="n">applySendEmailDefaultsForCase</span><span class="o">((</span><span class="nc">QuickAction</span><span class="o">.</span><span class="na">SendEmailQuickActionDefaults</span><span class="o">)</span> <span class="n">defaults</span><span class="o">);</span>
+          <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">applySendEmailDefaultsForCase</span><span class="o">(</span><span class="nc">QuickAction</span><span class="o">.</span><span class="na">SendEmailQuickActionDefaults</span> <span class="n">sendEmailDefaults</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// query for the relevant data on the related Case record (e.g. Type field)</span>
+    <span class="nc">Case</span> <span class="n">c</span> <span class="o">=</span> <span class="o">[</span>
+      <span class="no">SELECT</span> <span class="nc">Type</span>
+      <span class="no">FROM</span> <span class="nc">Case</span>
+      <span class="no">WHERE</span> <span class="nc">Id</span> <span class="o">=</span> <span class="o">:</span><span class="n">sendEmailDefaults</span><span class="o">.</span><span class="na">getContextId</span><span class="o">()</span>
+    <span class="o">];</span>
+
+    <span class="c1">// implement some logic to obtain the correct `emailTemplateId` &amp;&amp; `validatedFromAddress`,</span>
+    <span class="c1">// based on the Case record fields (preferably using a Custom Metadata Type)</span>
+        
+    <span class="c1">// apply the default email template</span>
+    <span class="n">sendEmailDefaults</span><span class="o">.</span><span class="na">setTemplateId</span><span class="o">(</span><span class="n">emailTemplateId</span><span class="o">);</span>
+    <span class="n">sendEmailDefaults</span><span class="o">.</span><span class="na">setInsertTemplateBody</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">sendEmailDefaults</span><span class="o">.</span><span class="na">setIgnoreTemplateSubject</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+
+    <span class="c1">// apply other field defaults to EmailMessage (e.g. ValidatedFromAddress)</span>
+    <span class="nc">EmailMessage</span> <span class="n">emailMessage</span> <span class="o">=</span> <span class="o">(</span><span class="nc">EmailMessage</span><span class="o">)</span> <span class="n">sendEmailDefaults</span><span class="o">.</span><span class="na">getTargetSObject</span><span class="o">();</span>
+    <span class="n">emailMessage</span><span class="o">.</span><span class="na">ValidatedFromAddress</span> <span class="o">=</span> <span class="n">validatedFromAddress</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>I haven’t provided the exact way to obtain the <code class="highlighter-rouge">emailTemplateId</code> and <code class="highlighter-rouge">validatedFromAddress</code> values, as this depends on your specific requirements. However, I will just say that you can query Email Templates using a query similar to the one below:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">Id</span> <span class="k">FROM</span> <span class="n">EmailTemplate</span> <span class="k">WHERE</span> <span class="n">DeveloperName</span> <span class="o">=</span> <span class="s1">'SAMPLE_NAME'</span></code></pre></figure>
+
+<p>Salesforce <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_interface_QuickAction_QuickActionDefaultsHandler.htm" target="_blank">documentation</a> doesn’t mention this, but the above implementation will not work if you just create a class and implement the above interface. As it stands, the above class is not invoked at all when you open the <strong>Email Quick Action</strong>. However, there’s another <a href="https://help.salesforce.com/articleView?id=case_interaction_default_templates.htm&amp;type=5" target="_blank">document</a> that I went through by chance (during my second attempt) before implementing the above logic, that mentioned the following steps:</p>
+
+<ol>
+  <li>From Setup, enter <code class="highlighter-rouge">Support Settings</code> in the <code class="highlighter-rouge">Quick Find</code> box, then select <strong>Support Settings</strong>.</li>
+  <li>Click <strong>Edit</strong>.</li>
+  <li>Select <code class="highlighter-rouge">Enable default email templates</code>.</li>
+  <li>Choose the Apex class that contains your template selection logic.</li>
+  <li>Click <strong>Save</strong>.</li>
+</ol>
+
+<p>So after we follow the above steps, our <strong>Support Settings</strong> should look like this:</p>
+
+<p><a href="/images/2019/11/24/supportSettings.png" target="_blank"><img src="/images/2019/11/24/supportSettings.png" alt="supportSettings" /></a></p>
+
+<p>Now the <code class="highlighter-rouge">EmailTemplateSelector</code> class will finally get invoked when you open the email composer widget in Case Activity Feed, and the email template will get prepopulated correctly.</p>
+
+<h2 id="extending-the-current-solution-with-a-custom-metadata-type">Extending the current solution with a Custom Metadata Type</h2>
+
+<p>The above solution is fine as it is, but I would like to suggest a further exercise to make yours, and the life of your admins, easier.</p>
+
+<p>I suggest creating a Custom Metadata Type called, for example, <code class="highlighter-rouge">Email Template Mapping</code>. There you can create fields to declaratively define different conditions upon which a different email template and <code class="highlighter-rouge">EmailMessage</code> fields are set. This will allow admins to change this logic without involving a developer.</p>
+
+  </div>
+
+  <div class="date">
+    Written on November 24, 2019
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/&title=Automatic Email Template Selection in Case Feed&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Automatic Email Template Selection in Case Feed&url=http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov.info@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2019/11/24/Automatic-Email-Template-Selection-in-Case-Feed/',
+		  'title': 'Automatic Email Template Selection in Case Feed'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
