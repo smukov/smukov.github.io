@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ensure Single Response per Survey Invitation – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="This will be a short post on how to prevent customers from answering more than once to a Salesforce Survey.
+
+
+
+" />
+    <meta property="og:description" content="This will be a short post on how to prevent customers from answering more than once to a Salesforce Survey.
+
+
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Ensure Single Response per Survey Invitation" />
+    <meta property="twitter:title" content="Ensure Single Response per Survey Invitation" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Ensure Single Response per Survey Invitation | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Ensure Single Response per Survey Invitation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This will be a short post on how to prevent customers from answering more than once to a Salesforce Survey." />
+<meta property="og:description" content="This will be a short post on how to prevent customers from answering more than once to a Salesforce Survey." />
+<link rel="canonical" href="http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-25T00:00:00+01:00" />
+<script type="application/ld+json">
+{"url":"http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/","headline":"Ensure Single Response per Survey Invitation","dateModified":"2019-11-25T00:00:00+01:00","datePublished":"2019-11-25T00:00:00+01:00","description":"This will be a short post on how to prevent customers from answering more than once to a Salesforce Survey.","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Ensure Single Response per Survey Invitation</h1>
+
+  <div class="entry">
+    <p>This will be a short post on how to prevent customers from answering more than once to a Salesforce Survey.</p>
+
+<p><a href="/images/2019/11/25/surveyResponseReceived.png" target="_blank"><img src="/images/2019/11/25/surveyResponseReceived.png" alt="survey_response_received" /></a></p>
+
+<!--more-->
+
+<h2 id="problem">Problem</h2>
+
+<p><a href="https://help.salesforce.com/articleView?id=concept_salesforce_surveys.htm&amp;type=5" target="_blank">Salesforce Surveys</a> are usually shared via publicly accessible Communities. The process that I’ve seen so far usually involves an Agent closing a Case, and then some kind of an automated process will generate a public link to a Survey that will be sent out to a customer via email. The customer would then open this link and submit a response.</p>
+
+<p>The problem occurs if the customer opens the same Survey link for the second time - he or she will be able to submit a second response. The customer would then probably get confused, thinking that something is broken and that Survey responses are not being sent out, which would lead to pretty bad customer experience. So how can we avoid this?</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>The fact that Surveys are shared via publicly accessible Communities can help us out in this case. Salesforce Communities that can be accessed by the general public, without any need for prior authentication, have a special user called “<a href="https://help.salesforce.com/articleView?id=networks_public_access.htm&amp;type=5" target="_blank">Guest User</a>”. All guest visitors to a public site share this same guest user record (one per site) and have the same access level.</p>
+
+<p>If we take this knowledge and drill down into <a href="https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_surveyinvitation.htm" target="_blank">Survey Invitation</a> object, we will find a field called <code class="highlighter-rouge">OptionsAllowGuestUserResponse</code>. All we need to do to stop a customer from answering a Survey Invitation more than once is to set this <code class="highlighter-rouge">OptionsAllowGuestUserResponse</code> field to <strong>false</strong> once we receive the first response. The below <code class="highlighter-rouge">SurveyInvitationTrigger</code> will do just that:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">trigger</span> <span class="nc">SurveyInvitationTrigger</span> <span class="n">on</span> <span class="nf">SurveyInvitation</span> <span class="o">(</span><span class="n">before</span> <span class="n">update</span><span class="o">)</span> 
+<span class="o">{</span>
+  <span class="k">for</span><span class="o">(</span><span class="nc">Id</span> <span class="n">surveyId</span> <span class="o">:</span> <span class="nc">Trigger</span><span class="o">.</span><span class="na">newMap</span><span class="o">.</span><span class="na">keySet</span><span class="o">()){</span>
+    <span class="nc">SurveyInvitation</span> <span class="n">newRecord</span> <span class="o">=</span> <span class="nc">Trigger</span><span class="o">.</span><span class="na">newMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">surveyId</span><span class="o">);</span>
+    <span class="nc">SurveyInvitation</span> <span class="n">oldRecord</span> <span class="o">=</span> <span class="nc">Trigger</span><span class="o">.</span><span class="na">oldMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">surveyId</span><span class="o">);</span>
+    
+    <span class="k">if</span><span class="o">(</span> <span class="n">newRecord</span><span class="o">.</span><span class="na">ResponseStatus</span> <span class="o">==</span> <span class="err">'</span><span class="nc">Completed</span><span class="err">'</span> <span class="o">&amp;&amp;</span> 
+        <span class="n">newRecord</span><span class="o">.</span><span class="na">ResponseStatus</span> <span class="o">!=</span> <span class="n">oldRecord</span><span class="o">.</span><span class="na">ResponseStatus</span>
+    <span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// survey has been responded to, so make it unavailable for public</span>
+      <span class="n">newRecord</span><span class="o">.</span><span class="na">OptionsAllowGuestUserResponse</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h2 id="appendix-providing-a-meaningful-message">Appendix: Providing a meaningful message</h2>
+
+<p>If you have a dedicated Salesforce community just for surveys, you can build on top of the provided solution to further improve your customer experience.</p>
+
+<p>If a customer visits the Survey Invitation link for the second time, after already submitting a response, the Salesforce community will show them an error page. In particular, the page that will be shown is the standard <code class="highlighter-rouge">Login Error</code> page that can be accessed via Salesforce <strong>Community Builder</strong>. You can customize this page to your liking to provide a more meaningful message to your customers, like the one below:</p>
+
+<p><a href="/images/2019/11/25/surveyResponseReceived.png" target="_blank"><img src="/images/2019/11/25/surveyResponseReceived.png" alt="survey_response_received" /></a></p>
+
+  </div>
+
+  <div class="date">
+    Written on November 25, 2019
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/&title=Ensure Single Response per Survey Invitation&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Ensure Single Response per Survey Invitation&url=http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov.info@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2019/11/25/Ensure-Single-Response-per-Survey-Invitation/',
+		  'title': 'Ensure Single Response per Survey Invitation'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
