@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Einstein Analytics Translator – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily translate Einstein Analytics dashboards.
+
+
+
+" />
+    <meta property="og:description" content="In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily translate Einstein Analytics dashboards.
+
+
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Einstein Analytics Translator" />
+    <meta property="twitter:title" content="Einstein Analytics Translator" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Einstein Analytics Translator | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Einstein Analytics Translator" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily translate Einstein Analytics dashboards." />
+<meta property="og:description" content="In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily translate Einstein Analytics dashboards." />
+<link rel="canonical" href="http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/" />
+<meta property="og:url" content="http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-02-17T00:00:00+01:00" />
+<script type="application/ld+json">
+{"url":"http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/","headline":"Einstein Analytics Translator","dateModified":"2020-02-17T00:00:00+01:00","datePublished":"2020-02-17T00:00:00+01:00","description":"In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily translate Einstein Analytics dashboards.","mainEntityOfPage":{"@type":"WebPage","@id":"http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site-logo-2.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Einstein Analytics Translator</h1>
+
+  <div class="entry">
+    <p>In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily <strong>translate Einstein Analytics dashboards</strong>.</p>
+
+<p><a href="/images/2020/2/17/csv_sample.png" target="_blank"><img src="/images/2020/2/17/csv_sample.png" alt="csv_sample" style="max-height: 200px" /></a></p>
+
+<!--more-->
+
+<h2 id="single-dashboard-in-multiple-languages">Single Dashboard in Multiple Languages</h2>
+
+<p>We know that users will often prefer to interact with an application in their language, that is a no brainer. However, this seems especially important when it comes to dashboards, as they are often presented to “important people” within a particular organization.</p>
+
+<p><strong>Einstein Analytics</strong> dashboards, although very powerful, do not provide an out of the box way to translate the dashboards dynamically - this is a feature gap that we have to find a solution for. The end goal is to have a single dashboard that will dynamically display in different languages, depending on the language setting of the user viewing it.</p>
+
+<h2 id="all-you-need-is-a-csv-file">All you need is a CSV file</h2>
+
+<p>To solve the issue with translations I had built an <a href="https://eatranslator.herokuapp.com/#/" target="_blank">app</a> that takes a CSV file and outputs a JSON code that can be inserted into <strong>Einstein Analytics</strong> dashboards. Once the code is inserted into a dashboard, all that is left to do is to bind the labels properly. Sounds simple enough, but it will take some explaining on how to use it properly, so brace yourselves.</p>
+
+<h2 id="how-to-use-the-einstein-analytics-translator-app">How to use the Einstein Analytics Translator app</h2>
+
+<h3 id="1-preparing-the-csv-file">1. Preparing the CSV file</h3>
+
+<p>To get started I provided a <a href="/images/2020/2/17/sample.csv">sample CSV file</a> that you can use as a template. The structure of the CSV file is very simple - the first column is called <strong>label_name</strong>, this column needs to have a unique name for each label (or phrase) that you want to translate. All the other columns represent the actual translations for that label. You can specify as many translations as you’d like, as long as each translation has its column. The column headers should contain the correct language codes <a href="https://help.salesforce.com/articleView?id=faq_getstart_what_languages_does.htm&amp;type=5" target="_blank">supported by Salesforce</a>.</p>
+
+<p><a href="/images/2020/2/17/csv_sample.png" target="_blank"><img src="/images/2020/2/17/csv_sample.png" alt="csv_sample" style="max-height: 200px" /></a></p>
+
+<h3 id="2-generating-the-json-code">2. Generating the JSON code</h3>
+
+<p>Once you have the CSV file ready - for now you can use the <a href="/images/2020/2/17/sample.csv">sample</a> I provided - go ahead and open the <a href="https://eatranslator.herokuapp.com/#/" target="_blank">Einstein Analytics Translator app</a> and give it a second (or 30) as it’s a free Heroku app that sometimes goes dormant and needs time waking up - I’m cheap, I know…</p>
+
+<p>Once the application loads up, click on the <strong>Start</strong> button to go to the <a href="https://eatranslator.herokuapp.com/#/input" target="_blank">2nd step</a>. In this step, you need to upload your CSV file and provide a Dataset name that will be the <em>driver</em> for the code that is going to be generated. This Dataset should ideally be the one that will always have at least 1 record in it, as the code needs at least 1 record to get executed.</p>
+
+<p>For example, let’s say that you signed up for a <a href="https://developer.salesforce.com/promotions/orgs/analytics-de" target="_blank">free Salesforce Developer Org with Einstein Analytics enabled</a>, and you opened a dashboard called <strong>Opportunity Details</strong>. To find the name of a Dataset used in this dashboard press Ctrl + E (on macOS: Cmd + E) <a href="https://help.salesforce.com/articleView?id=bi_dashboard_keyboard_shortcuts.htm&amp;type=0" target="_blank">keyboard shortcut</a> to open the JSON Editor. Once you are in JSON Editor, scroll to the bottom of the JSON code to the <strong>datasets</strong> section and there you will find the Dataset name - you can enter this name in <a href="https://eatranslator.herokuapp.com/#/input" target="_blank">EA Translator App</a>.</p>
+
+<p><a href="/images/2020/2/17/dataset_name.png" target="_blank"><img src="/images/2020/2/17/dataset_name.png" alt="dataset_name" /></a></p>
+
+<p>Once you entered the Dataset name and uploaded the CSV file to the app, press the <strong>Generate JSON</strong> button to go to the next step.</p>
+
+<p><a href="/images/2020/2/17/app_2nd_step.png" target="_blank"><img src="/images/2020/2/17/app_2nd_step.png" alt="einstein_analytics_label_translator_second_step" /></a></p>
+
+<h3 id="3-generated-code">3. Generated code</h3>
+
+<p>In the 3rd step of the application, you will be presented with the generated JSON code. There’s nothing much to do here except to click the <strong>Copy to Clipboard</strong> button.</p>
+
+<p><a href="/images/2020/2/17/app_3rd_step.png" target="_blank"><img src="/images/2020/2/17/app_3rd_step.png" alt="einstein_analytics_label_translator_third_step" /></a></p>
+
+<p>The 4th step of the application will just give you an overview of what you should do with the generated JSON code and will then point you back to this blog post.</p>
+
+<h3 id="4-using-the-generated-code">4. Using the generated code</h3>
+
+<p>Now is the time to use the generated JSON code inside a dashboard. Let’s go back to the example dashboard <strong>Opportunity Details</strong> that is available in the org when you sign up for a <a href="https://developer.salesforce.com/promotions/orgs/analytics-de" target="_blank">free Salesforce Developer Org with Einstein Analytics enabled</a>.</p>
+
+<p>Once you open the dashboard, press the Ctrl + E (on macOS: Cmd + E) <a href="https://help.salesforce.com/articleView?id=bi_dashboard_keyboard_shortcuts.htm&amp;type=0" target="_blank">keyboard shortcut</a> to open the JSON Editor - needless to say, make a backup at this point if you are doing this with a real-life dashboard. Find the <strong>steps</strong> part within the dashboard’s JSON file, and add a new line within its curly brackets and a comma. Paste the generated JSON code right in front of that comma, as indicated in the screenshot below. Press <strong>Done</strong> in JSON Editor to make sure that the dashboard code is still valid.</p>
+
+<p><a href="/images/2020/2/17/where_to_paste.png" target="_blank"><img src="/images/2020/2/17/where_to_paste.png" alt="where_to_paste" /></a></p>
+
+<p>If you were able to press <strong>Done</strong> without receiving any errors, you are ready to start binding the labels to translations. While still being in the preview mode, click on one of the text widgets within the dashboard and find its ID - e.g. click on “Opportunity Details” title as indicated in the screenshot.</p>
+
+<p><a href="/images/2020/2/17/finding_label_id2.png" target="_blank"><img src="/images/2020/2/17/finding_label_id2.png" alt="finding_label_id" /></a></p>
+
+<p>Now again press the Ctrl + E (on macOS: Cmd + E) <a href="https://help.salesforce.com/articleView?id=bi_dashboard_keyboard_shortcuts.htm&amp;type=0" target="_blank">keyboard shortcut</a> to open the JSON Editor. Search for the text widget ID from the previous step (e.g. “text_1”) within the JSON code and bind the <strong>text</strong> value to one of the labels from your CSV file (e.g. “other”).</p>
+
+<p><a href="/images/2020/2/17/binding_example.png" target="_blank"><img src="/images/2020/2/17/binding_example.png" alt="binding_example" /></a></p>
+
+<p>Now when you press the <strong>Done</strong> button the text widget that previously said “Opportunity Details” should say “Other” - as that’s the label from our CSV file we binded to. If you go to <em>Settings &gt; Language &amp; Time Zone</em> and change your User’s Language to “Deutsch”, once you refresh the dashboard the “Other” text should be translated into German “Andere”.</p>
+
+<p>You can use the same binding technique and the code template below to apply bindings to text widgets and buttons throughout the dashboard - make sure to replace the “INSERT_LABEL_HERE” with the appropriate label name from the CSV file:</p>
+
+<blockquote>
+  <p>{{coalesce(cell(translation_labels.result, 0, "INSERT_LABEL_HERE")).asString()}}</p>
+</blockquote>
+
+<h2 id="final-words">Final words</h2>
+
+<p>The steps can be tricky to follow at first, but once you do it the first time it is very easy to repeat and enhance the translations. If you need to add more labels to the CSV file, the process is the same, just regenerated the new JSON code using the <a href="https://eatranslator.herokuapp.com/#/" target="_blank">translator app</a> and replace the old one in the dashboard.</p>
+
+<p>The deployment with this approach is super easy as the bindings and the generated JSON code are part of the dashboard itself, so once you deploy the dashboard (e.g. using Change Set) the translations will be deployed as well.</p>
+
+<p>If some parts of the process are shady, feel free to leave a comment below.</p>
+
+  </div>
+
+  <div class="date">
+    Written on February 17, 2020
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/&title=Einstein Analytics Translator&source=http://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Einstein Analytics Translator&url=http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=http://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov.info@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov/smukov.github.io"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+	<!-- Google Analytics -->
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74717134-1', 'auto');
+		ga('send', 'pageview', {
+		  'page': '/blog/2020/02/17/Einstein-Analytics-Label-Translator/',
+		  'title': 'Einstein Analytics Translator'
+		});
+	</script>
+	<!-- End Google Analytics -->
+
+
+  </body>
+</html>
