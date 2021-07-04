@@ -1,1 +1,1 @@
-Sitemap: http://smukov.github.io/sitemap.xml
+Sitemap: https://smukov.github.io/sitemap.xml
