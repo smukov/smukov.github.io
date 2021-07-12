@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Delete a Sharing Rule via Destructive Changes – Smukov on Salesforce – Ideas and experiences of a Salesforce Developer</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="Recently a colleague of mine had difficulties with deleting a Sharing Rule with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post.
+
+" />
+    <meta property="og:description" content="Recently a colleague of mine had difficulties with deleting a Sharing Rule with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post.
+
+" />
+    
+    <meta name="author" content="Smukov on Salesforce" />
+
+    
+    <meta property="og:title" content="Delete a Sharing Rule via Destructive Changes" />
+    <meta property="twitter:title" content="Delete a Sharing Rule via Destructive Changes" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  <link rel="shortcut icon" type="image/png" href="/favicon32x32.png">
+	<link href="/css/syntax.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Smukov on Salesforce - Ideas and experiences of a Salesforce Developer" href="/feed.xml" />
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    
+    <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Delete a Sharing Rule via Destructive Changes | Smukov on Salesforce</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Delete a Sharing Rule via Destructive Changes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Recently a colleague of mine had difficulties with deleting a Sharing Rule with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post." />
+<meta property="og:description" content="Recently a colleague of mine had difficulties with deleting a Sharing Rule with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post." />
+<link rel="canonical" href="https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/" />
+<meta property="og:url" content="https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/" />
+<meta property="og:site_name" content="Smukov on Salesforce" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-07-12T00:00:00+02:00" />
+<script type="application/ld+json">
+{"url":"https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/","headline":"Delete a Sharing Rule via Destructive Changes","dateModified":"2021-07-12T00:00:00+02:00","datePublished":"2021-07-12T00:00:00+02:00","description":"Recently a colleague of mine had difficulties with deleting a Sharing Rule with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post.","mainEntityOfPage":{"@type":"WebPage","@id":"https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-74717134-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-74717134-1', {
+      'page_title' : 'Delete a Sharing Rule via Destructive Changes',
+      'page_path': '/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/',
+      'page_location': 'https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/'
+    });
+  </script>
+  <!-- End Global site tag (gtag.js) - Google Analytics -->
+
+
+
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="/images/site_logo_new_tiny.png" style="margin-top: 2px;"/></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Smukov on Salesforce</a></h1>
+            <p class="site-description">Ideas and experiences of a Salesforce Developer</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+            <a href="/hire-me" style="
+            background: #fb6340;
+            padding: 5px 8px 5px 8px;
+            color: white;
+            border-radius: 25px;">Hire me</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Delete a Sharing Rule via Destructive Changes</h1>
+
+  <div class="entry">
+    <p>Recently a colleague of mine had difficulties with deleting a <strong>Sharing Rule</strong> with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post.</p>
+
+<!--more-->
+
+<h2 id="how-are-we-going-to-delete-a-sharing-rule">How are we going to delete a Sharing Rule?</h2>
+
+<p>We are going to use <strong>destructive changes</strong> to delete it. In particular, we will use the <strong>destructiveChangesPre.xml</strong> file.</p>
+
+<blockquote>
+  <p>When a <strong>destructiveChangesPre.xml</strong> file is part of a deployment package, it will instruct Salesforce to delete all of the components listed in the file <ins>before</ins> deploying the actual metadata within the package. Keep in mind that not everything can be deleted with this file - e.g. components that are referenced elsewhere within the system will not be deleted and will usually cause the deployment to fail. In those scenarios the alternative approach is to use a <strong>destructiveChangesPost.xml</strong> file, as the components in this file will be deleted <ins>after</ins> the main package is deployed, so it will give you a chance to remove the references to the metadata that you are trying to delete, before actually deleting them.</p>
+</blockquote>
+
+<h2 id="why-is-deleting-sharing-rules-so-difficult">Why is deleting Sharing Rules so difficult?</h2>
+
+<p>Deleting Sharing Rules can be a bit tricky as there are 3 things that you need to identify before actually listing the Sharing Rule in the <strong>destructiveChangesPre.xml</strong> file. These are:</p>
+
+<ol>
+  <li>Sharing Rule Developer Name</li>
+  <li>Sharing Rule Object</li>
+  <li>Sharing Rule Type</li>
+</ol>
+
+<p>Sharing Rule <strong>Developer Name</strong> and <strong>Object</strong> should be pretty straightforward to identify, as you can see that information directly from the Salesforce Setup by going to the <em>Sharing Settings</em>.</p>
+
+<blockquote>
+  <p>NOTE: If you are unsure how to get the Developer Name of a Sharing Rule, go to Salesforce Setup &gt; Sharing Settings &gt; Click <strong>Edit</strong> on the Sharing Rule that you want to identify and the Developer Name will be in the <strong>Rule Name</strong> field.</p>
+</blockquote>
+
+<p>So let’s pretend that we know the <strong>Developer Name</strong> and <strong>Object</strong> already and that we want to delete two rules on the <em>Account</em> object named <em>Sharing_Rule_1</em> and <em>Sharing_Rule_2</em>. Now we need to identify their types.</p>
+
+<h2 id="how-to-identify-the-type-of-a-sharing-rule">How to identify the type of a Sharing Rule?</h2>
+
+<p>The easiest way (for me) to identify a <strong>Sharing Rule Type</strong> is to search for the rule by its Developer Name within the Sharing Rule file of the object it belongs to. In this case, because we know that the rules belong to the <em>Account</em> object, the file that we need to search through is called <strong>Account.sharingRules-meta.xml</strong>. So let’s search for our sharing rules and try to identify their types.</p>
+
+<h3 id="owner-based-sharing-rule">Owner Based Sharing Rule</h3>
+
+<p>First, we search for <em>Sharing_Rule_1</em> and we find the following result:</p>
+
+<p><a href="/images/2021/6/12/OwnerRule.png" target="_blank"><img src="/images/2021/6/12/OwnerRule.png" alt="Owner Sharing Rule" style="max-height: 300px" /></a></p>
+
+<p>Looking at the picture above you will see that the surrounding tag (the first and the last line) is called <strong>sharingOwnerRules</strong>. This is a tell-tale sign that this is, indeed, an <strong>Owner-based</strong> sharing rule (SharingOwnerRule).</p>
+
+<h3 id="criteria-based-sharing-rule">Criteria Based Sharing Rule</h3>
+
+<p>Next, we search for the second rule called <em>Sharing_Rule_2</em> and see the following:</p>
+
+<p><a href="/images/2021/6/12/CriteriaRule.png" target="_blank"><img src="/images/2021/6/12/CriteriaRule.png" alt="Criteria Sharing Rule" style="max-height: 300px" /></a></p>
+
+<p>Using the same approach as before, we can now clearly see that this is a <strong>Criteria-based</strong> sharing rule (SharingCriteriaRule).</p>
+
+<h2 id="how-to-add-the-sharing-rules-to-destructive-changes">How to add the Sharing Rules to Destructive Changes?</h2>
+
+<p>Now that we have all the information we need, we can piece together the <strong>destructiveChangesPre.xml</strong> file to look as following:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;Package</span> <span class="na">xmlns=</span><span class="s">"http://soap.sforce.com/2006/04/metadata"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;types&gt;</span>
+    <span class="nt">&lt;members&gt;</span>Account.Sharing_Rule_1<span class="nt">&lt;/members&gt;</span>
+    <span class="nt">&lt;name&gt;</span>SharingOwnerRule<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;/types&gt;</span>
+  <span class="nt">&lt;types&gt;</span>
+    <span class="nt">&lt;members&gt;</span>Account.Sharing_Rule_2<span class="nt">&lt;/members&gt;</span>
+    <span class="nt">&lt;name&gt;</span>SharingCriteriaRule<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;/types&gt;</span>
+  <span class="nt">&lt;version&gt;</span>51.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/Package&gt;</span></code></pre></figure>
+
+<p>Notice that each rule is listed based on its type (<strong>SharingOwnerRule</strong> vs <strong>SharingCriteriaRule</strong>). As well, each rule has to be prefixed by the name of the object that they belong to - in this case, that is the <strong>Account</strong> object (for custom objects don’t forget to add the <em>__c</em> suffix).</p>
+
+<h2 id="final-words">Final words</h2>
+
+<p>This is all you need to know to delete a Sharing Rule via Destructive Changes, which are nowadays usually used together with some kind of a CI/CD implementation. I hope this blog post was helpful.</p>
+
+<p>You can read more on the Sharing Rules <a href="https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_sharingrules.htm" target="_blank">here</a>.</p>
+
+<h2 id="things-to-keep-in-mind">Things to keep in mind</h2>
+
+<p>Some combinations of sharing rule and sharing model changes will not be deployed properly in a single transaction, so sometimes manual post-deployment steps or multiple subsequent deployments will be required.</p>
+
+<p>Please see below in which scenarios the issues may happen. These snippets are taken from this <a href="https://dreamevent.secure.force.com/articleView?id=deploy_special_behavior.htm&amp;type=5" target="_blank">article</a>:</p>
+
+<blockquote>
+  <p>Simultaneously updating the <ins>sharingModel</ins> field for an object and adding a new owner-based sharing rule isn’t supported in Metadata API. You can add an owner-based sharing rule when the org-wide default is public, and subsequently update the <ins>sharingModel</ins>, which would result in a single sharing recalculation. You can deploy a criteria-based or guest user sharing rule and changes to the <ins>sharingModel</ins> field together using the Metadata API. <br /> <br /> Simultaneously inserting a custom object, updating the <ins>sharingModel</ins> field for an object, and adding a new owner-based sharing rule isn’t supported. Instead, three separate deployments are required. First, deploy the custom object, then deploy the updated <ins>sharingModel</ins> for the object, and then deploy the new owner-based sharing rule. You can update the <ins>sharingModel</ins> field and add a criteria-based or guest user sharing rule in one deployment.</p>
+</blockquote>
+
+
+  </div>
+
+  <div class="date">
+    Written on July 12, 2021
+  </div>
+
+  <div class="share-page">
+    Share this </br> </br>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/&title=Delete a Sharing Rule via Destructive Changes&source=https://smukov.github.io" rel="nofollow" target="_blank" title="Share on LinkedIn">
+        <i class="fa fa-linkedin fa-2x" style="color:#0077B5"></i>
+    </a>
+    <a href="https://twitter.com/intent/tweet?text=Delete a Sharing Rule via Destructive Changes&url=https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">
+        <i class="fa fa-twitter fa-2x" style="color:#55acee"></i>
+    </a>
+    <a href="https://facebook.com/sharer.php?u=https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/" rel="nofollow" target="_blank" title="Share on Facebook">
+        <i class="fa fa-facebook fa-2x" style="color:#3b5998"></i>
+    </a>
+    <a href="https://plus.google.com/share?url=https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/" rel="nofollow" target="_blank" title="Share on Google+">
+        <i class="fa fa-google-plus fa-2x" style="color:#d34836"></i>
+    </a>
+</div>
+  
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'smukovgithubio';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:smukov.info@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/smukov"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/smukov"><i class="svg-icon linkedin"></i></a>
+
+<a href="/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/MiroslavSmukov"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+  </body>
+</html>

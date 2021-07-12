@@ -1,4 +1,87 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="https://smukov.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://smukov.github.io/" rel="alternate" type="text/html" /><updated>2021-07-11T20:49:48+02:00</updated><id>https://smukov.github.io/feed.xml</id><title type="html">Smukov on Salesforce</title><subtitle>Ideas and experiences of a Salesforce Developer</subtitle><entry><title type="html">Einstein Analytics Translator</title><link href="https://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/" rel="alternate" type="text/html" title="Einstein Analytics Translator" /><published>2020-02-17T00:00:00+01:00</published><updated>2020-02-17T00:00:00+01:00</updated><id>https://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator</id><content type="html" xml:base="https://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/">&lt;p&gt;In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily &lt;strong&gt;translate Einstein Analytics dashboards&lt;/strong&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="https://smukov.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://smukov.github.io/" rel="alternate" type="text/html" /><updated>2021-07-12T22:31:08+02:00</updated><id>https://smukov.github.io/feed.xml</id><title type="html">Smukov on Salesforce</title><subtitle>Ideas and experiences of a Salesforce Developer</subtitle><entry><title type="html">Delete a Sharing Rule via Destructive Changes</title><link href="https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/" rel="alternate" type="text/html" title="Delete a Sharing Rule via Destructive Changes" /><published>2021-07-12T00:00:00+02:00</published><updated>2021-07-12T00:00:00+02:00</updated><id>https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes</id><content type="html" xml:base="https://smukov.github.io/blog/2021/07/12/Delete-Sharing-Rules-via-CICD-Destructive-Changes/">&lt;p&gt;Recently a colleague of mine had difficulties with deleting a &lt;strong&gt;Sharing Rule&lt;/strong&gt; with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;how-are-we-going-to-delete-a-sharing-rule&quot;&gt;How are we going to delete a Sharing Rule?&lt;/h2&gt;
+
+&lt;p&gt;We are going to use &lt;strong&gt;destructive changes&lt;/strong&gt; to delete it. In particular, we will use the &lt;strong&gt;destructiveChangesPre.xml&lt;/strong&gt; file.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;When a &lt;strong&gt;destructiveChangesPre.xml&lt;/strong&gt; file is part of a deployment package, it will instruct Salesforce to delete all of the components listed in the file &lt;ins&gt;before&lt;/ins&gt; deploying the actual metadata within the package. Keep in mind that not everything can be deleted with this file - e.g. components that are referenced elsewhere within the system will not be deleted and will usually cause the deployment to fail. In those scenarios the alternative approach is to use a &lt;strong&gt;destructiveChangesPost.xml&lt;/strong&gt; file, as the components in this file will be deleted &lt;ins&gt;after&lt;/ins&gt; the main package is deployed, so it will give you a chance to remove the references to the metadata that you are trying to delete, before actually deleting them.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;why-is-deleting-sharing-rules-so-difficult&quot;&gt;Why is deleting Sharing Rules so difficult?&lt;/h2&gt;
+
+&lt;p&gt;Deleting Sharing Rules can be a bit tricky as there are 3 things that you need to identify before actually listing the Sharing Rule in the &lt;strong&gt;destructiveChangesPre.xml&lt;/strong&gt; file. These are:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Sharing Rule Developer Name&lt;/li&gt;
+  &lt;li&gt;Sharing Rule Object&lt;/li&gt;
+  &lt;li&gt;Sharing Rule Type&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Sharing Rule &lt;strong&gt;Developer Name&lt;/strong&gt; and &lt;strong&gt;Object&lt;/strong&gt; should be pretty straightforward to identify, as you can see that information directly from the Salesforce Setup by going to the &lt;em&gt;Sharing Settings&lt;/em&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;NOTE: If you are unsure how to get the Developer Name of a Sharing Rule, go to Salesforce Setup &amp;gt; Sharing Settings &amp;gt; Click &lt;strong&gt;Edit&lt;/strong&gt; on the Sharing Rule that you want to identify and the Developer Name will be in the &lt;strong&gt;Rule Name&lt;/strong&gt; field.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;So let’s pretend that we know the &lt;strong&gt;Developer Name&lt;/strong&gt; and &lt;strong&gt;Object&lt;/strong&gt; already and that we want to delete two rules on the &lt;em&gt;Account&lt;/em&gt; object named &lt;em&gt;Sharing_Rule_1&lt;/em&gt; and &lt;em&gt;Sharing_Rule_2&lt;/em&gt;. Now we need to identify their types.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-identify-the-type-of-a-sharing-rule&quot;&gt;How to identify the type of a Sharing Rule?&lt;/h2&gt;
+
+&lt;p&gt;The easiest way (for me) to identify a &lt;strong&gt;Sharing Rule Type&lt;/strong&gt; is to search for the rule by its Developer Name within the Sharing Rule file of the object it belongs to. In this case, because we know that the rules belong to the &lt;em&gt;Account&lt;/em&gt; object, the file that we need to search through is called &lt;strong&gt;Account.sharingRules-meta.xml&lt;/strong&gt;. So let’s search for our sharing rules and try to identify their types.&lt;/p&gt;
+
+&lt;h3 id=&quot;owner-based-sharing-rule&quot;&gt;Owner Based Sharing Rule&lt;/h3&gt;
+
+&lt;p&gt;First, we search for &lt;em&gt;Sharing_Rule_1&lt;/em&gt; and we find the following result:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/images/2021/6/12/OwnerRule.png&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/images/2021/6/12/OwnerRule.png&quot; alt=&quot;Owner Sharing Rule&quot; style=&quot;max-height: 300px&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Looking at the picture above you will see that the surrounding tag (the first and the last line) is called &lt;strong&gt;sharingOwnerRules&lt;/strong&gt;. This is a tell-tale sign that this is, indeed, an &lt;strong&gt;Owner-based&lt;/strong&gt; sharing rule (SharingOwnerRule).&lt;/p&gt;
+
+&lt;h3 id=&quot;criteria-based-sharing-rule&quot;&gt;Criteria Based Sharing Rule&lt;/h3&gt;
+
+&lt;p&gt;Next, we search for the second rule called &lt;em&gt;Sharing_Rule_2&lt;/em&gt; and see the following:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/images/2021/6/12/CriteriaRule.png&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/images/2021/6/12/CriteriaRule.png&quot; alt=&quot;Criteria Sharing Rule&quot; style=&quot;max-height: 300px&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Using the same approach as before, we can now clearly see that this is a &lt;strong&gt;Criteria-based&lt;/strong&gt; sharing rule (SharingCriteriaRule).&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-add-the-sharing-rules-to-destructive-changes&quot;&gt;How to add the Sharing Rules to Destructive Changes?&lt;/h2&gt;
+
+&lt;p&gt;Now that we have all the information we need, we can piece together the &lt;strong&gt;destructiveChangesPre.xml&lt;/strong&gt; file to look as following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Package&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://soap.sforce.com/2006/04/metadata&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;types&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;members&amp;gt;&lt;/span&gt;Account.Sharing_Rule_1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/members&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;SharingOwnerRule&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/types&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;types&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;members&amp;gt;&lt;/span&gt;Account.Sharing_Rule_2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/members&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;SharingCriteriaRule&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/types&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;51.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Package&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Notice that each rule is listed based on its type (&lt;strong&gt;SharingOwnerRule&lt;/strong&gt; vs &lt;strong&gt;SharingCriteriaRule&lt;/strong&gt;). As well, each rule has to be prefixed by the name of the object that they belong to - in this case, that is the &lt;strong&gt;Account&lt;/strong&gt; object (for custom objects don’t forget to add the &lt;em&gt;__c&lt;/em&gt; suffix).&lt;/p&gt;
+
+&lt;h2 id=&quot;final-words&quot;&gt;Final words&lt;/h2&gt;
+
+&lt;p&gt;This is all you need to know to delete a Sharing Rule via Destructive Changes, which are nowadays usually used together with some kind of a CI/CD implementation. I hope this blog post was helpful.&lt;/p&gt;
+
+&lt;p&gt;You can read more on the Sharing Rules &lt;a href=&quot;https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_sharingrules.htm&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;things-to-keep-in-mind&quot;&gt;Things to keep in mind&lt;/h2&gt;
+
+&lt;p&gt;Some combinations of sharing rule and sharing model changes will not be deployed properly in a single transaction, so sometimes manual post-deployment steps or multiple subsequent deployments will be required.&lt;/p&gt;
+
+&lt;p&gt;Please see below in which scenarios the issues may happen. These snippets are taken from this &lt;a href=&quot;https://dreamevent.secure.force.com/articleView?id=deploy_special_behavior.htm&amp;amp;type=5&quot; target=&quot;_blank&quot;&gt;article&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Simultaneously updating the &lt;ins&gt;sharingModel&lt;/ins&gt; field for an object and adding a new owner-based sharing rule isn’t supported in Metadata API. You can add an owner-based sharing rule when the org-wide default is public, and subsequently update the &lt;ins&gt;sharingModel&lt;/ins&gt;, which would result in a single sharing recalculation. You can deploy a criteria-based or guest user sharing rule and changes to the &lt;ins&gt;sharingModel&lt;/ins&gt; field together using the Metadata API. &lt;br /&gt; &lt;br /&gt; Simultaneously inserting a custom object, updating the &lt;ins&gt;sharingModel&lt;/ins&gt; field for an object, and adding a new owner-based sharing rule isn’t supported. Instead, three separate deployments are required. First, deploy the custom object, then deploy the updated &lt;ins&gt;sharingModel&lt;/ins&gt; for the object, and then deploy the new owner-based sharing rule. You can update the &lt;ins&gt;sharingModel&lt;/ins&gt; field and add a criteria-based or guest user sharing rule in one deployment.&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name></name></author><category term="ci/cd" /><category term="deployments" /><category term="destructive-changes" /><summary type="html">Recently a colleague of mine had difficulties with deleting a Sharing Rule with our CI/CD solution. I tried helping him and saw that it’s not that easy to do it, so I decided to document the process in this blog post.</summary></entry><entry><title type="html">Einstein Analytics Translator</title><link href="https://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/" rel="alternate" type="text/html" title="Einstein Analytics Translator" /><published>2020-02-17T00:00:00+01:00</published><updated>2020-02-17T00:00:00+01:00</updated><id>https://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator</id><content type="html" xml:base="https://smukov.github.io/blog/2020/02/17/Einstein-Analytics-Label-Translator/">&lt;p&gt;In this post I’ll share with you how you can use a CSV file, like the one in the screenshot below, to easily &lt;strong&gt;translate Einstein Analytics dashboards&lt;/strong&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;/images/2020/2/17/csv_sample.png&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/images/2020/2/17/csv_sample.png&quot; alt=&quot;csv_sample&quot; style=&quot;max-height: 200px&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -822,66 +905,4 @@
     &lt;span class=&quot;na&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;What did you think about it?&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
     &lt;span class=&quot;na&quot;&gt;delay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5000&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><category term="lightning" /><summary type="html">Let’s create a simple Lightning Component that will display Toast messages like below:</summary></entry><entry><title type="html">Sorting Salesforce Records with JavaScript</title><link href="https://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/" rel="alternate" type="text/html" title="Sorting Salesforce Records with JavaScript" /><published>2016-06-03T00:00:00+02:00</published><updated>2016-06-03T00:00:00+02:00</updated><id>https://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records</id><content type="html" xml:base="https://smukov.github.io/blog/2016/06/03/JavaScript-Sorting-Salesforce-Records/">&lt;p&gt;In a &lt;a href=&quot;http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/&quot;&gt;previous post&lt;/a&gt; I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.&lt;/p&gt;
-
-&lt;p&gt;First of all, go to my &lt;a href=&quot;http://smukov.github.io/blog/2016/06/03/JavaScript-Accessing-Salesforce-Record-Fields/&quot;&gt;previous post&lt;/a&gt; to see how the &lt;code class=&quot;highlighter-rouge&quot;&gt;getRecordField&lt;/code&gt; function is defined and used.&lt;/p&gt;
-
-&lt;p&gt;Next, let’s see how the &lt;code class=&quot;highlighter-rouge&quot;&gt;advancedDynamicSort&lt;/code&gt; function, that we’ll use for array sorting, looks like:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/**
- * Usage: array.sort(advancedDynamicSort('Property_Name.Sub_Property.Sub_Sub_Property'));
- * for Descending: array.sort(advancedDynamicSort('-Property_Name.Sub_Property.Sub_Sub_Property'));
- */&lt;/span&gt;
- &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;advancedDynamicSort&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-         &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sortOrder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-             &lt;span class=&quot;nx&quot;&gt;sortOrder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-             &lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;substr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-             &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getRecordField&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;getRecordField&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getRecordField&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;getRecordField&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;sortOrder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-     &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Sample use:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;one_property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;something&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;another_property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;nested_property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;nested_array&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;},{&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;one_property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;something else&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;another_property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;nested_property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;nested_array&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;},{&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;one_property&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;another_property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;nested_property&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;nested_array&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}];&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;//sort by first level property&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;advancedDynamicSort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;one_property&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;//sort by property of a nested object&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;advancedDynamicSort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;another_property.nested_property&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;//you can even access an array objects, and sort descending by&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//prepending minus (-) in front of the property string&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;advancedDynamicSort&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;-another_property.nested_array.1.x&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;I have to give credit to the original creator of the &lt;code class=&quot;highlighter-rouge&quot;&gt;dynamicSort&lt;/code&gt; function, Ege Özcan, and his &lt;a href=&quot;http://stackoverflow.com/a/4760279/634951&quot;&gt;StackOverflow answer&lt;/a&gt;. All I did in the end was adjusting his method to work with my function that dynamically reads object’s properties in order to make the sorter even more flexible.&lt;/p&gt;
-
-&lt;p&gt;That’s it, I hope you’ll find this useful, and if you have any suggestions or critique, feel free to drop me a line in the comments below.&lt;/p&gt;</content><author><name></name></author><category term="javascript" /><category term="visualforce" /><category term="utility" /><summary type="html">In a previous post I’ve shared with you a JavaScript function that I’m using in order to easily access object’s properties that go from 1 to n levels of depth. Now, I’ve decided to extend on that post, and show you how I’m using the same method to achieve the JavaScript array sorting using dynamic properties.</summary></entry></feed>
+  &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><category term="lightning" /><summary type="html">Let’s create a simple Lightning Component that will display Toast messages like below:</summary></entry></feed>
